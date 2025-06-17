@@ -30,9 +30,10 @@ class DefaultSettings(BaseSettings):
     JWT_EXPIRES_TIME: int
     JWT_SECRET_KEY: str
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
+    model_config = {
+        "env_file": ".env",
+        "env_file_encoding": "utf-8",
+    }
 
 
 settings = DefaultSettings()
