@@ -30,3 +30,11 @@ class BookOut(BaseSchema):
     barcode: int
     description: Optional[str]
     status: Status
+
+class BookListOut(BaseSchema):
+    id: int
+    title: str
+    isbn: Optional[str]
+    author_id: int
+    category_id: int
+    status: Status
