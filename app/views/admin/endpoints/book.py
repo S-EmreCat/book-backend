@@ -4,35 +4,29 @@ from sqlalchemy.orm import Session
 from app.core.book import book_core
 from app.models import PanelUser
 from app.schemas import MessageOut
-from app.schemas.admin.book import BookIn, BookOut, BookListOut
+from app.schemas.admin.book import BookIn, BookListOut, BookOut
 from app.views.admin.deps import get_current_panel_user
 from app.views.deps import get_db
 
 router = APIRouter()
 
 
-@router.get("", response_model=list[BookOut], summary="Tüm Kitapları Listele")
+@router.get("", response_model=list[BookListOut], summary="Tüm Kitapları Listele")
 def get_all_books(
     db: Session = Depends(get_db),
     panel_user: PanelUser = Depends(get_current_panel_user),
 ):
     return book_core.get_all_books(db=db)
 
-@router.get("", response_model=list[BookListOut], summary="Tüm Kitapları Özet Bilgileri ile Listele")
-def get_all_list_books(
-    db: Session = Depends(get_db),
-    panel_user: PanelUser = Depends(get_current_panel_user),
-):
-    books = book_core.get_all_books(db=db)  
-    return [BookListOut.model_validate(book) for book in books]
 
-@router.get("/{book_id}", response_model=BookListOut, summary="Kitap Detayını Getir")
+@router.get("/{book_id}", response_model=BookListOut, summary="Kitap Detayı")
 def get_book_detail(
     book_id: int,
     db: Session = Depends(get_db),
     panel_user: PanelUser = Depends(get_current_panel_user),
 ):
-    return book_core.get_book_by_id(db=db, book_id=book_id)
+    return book_core.get_book_by_id(db=db, book_id=book_id, only_active=False)
+
 
 @router.post("", response_model=BookOut, summary="Kitap Ekle")
 def create_book(
@@ -60,4 +54,3 @@ def delete_book(
     panel_user: PanelUser = Depends(get_current_panel_user),
 ):
     return book_core.delete_book(db=db, book_id=book_id)
-
