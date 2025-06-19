@@ -31,6 +31,7 @@ class BookOut(BaseSchema):
     description: Optional[str]
     status: Status
 
+
 class BookListOut(BaseSchema):
     id: int
     title: str
