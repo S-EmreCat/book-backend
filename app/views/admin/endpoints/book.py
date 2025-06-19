@@ -4,14 +4,14 @@ from sqlalchemy.orm import Session
 from app.core.book import book_core
 from app.models import PanelUser
 from app.schemas import MessageOut
-from app.schemas.admin.book import BookIn, BookOut
+from app.schemas.admin.book import BookIn, BookListOut, BookOut
 from app.views.admin.deps import get_current_panel_user
 from app.views.deps import get_db
 
 router = APIRouter()
 
 
-@router.get("", response_model=list[BookOut], summary="Tüm Kitapları Listele")
+@router.get("", response_model=list[BookListOut], summary="Tüm Kitapları Listele")
 def get_all_books(
     db: Session = Depends(get_db),
     panel_user: PanelUser = Depends(get_current_panel_user),
