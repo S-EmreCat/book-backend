@@ -39,3 +39,22 @@ class BookListOut(BaseSchema):
     author_id: int
     category_id: int
     status: Status
+
+
+class AuthorOut(BaseSchema):
+    id: int
+    name: str
+
+
+class CategoryOut(BaseSchema):
+    id: int
+    name: str
+
+
+class BookListRelationsOut(BaseSchema):
+    id: int
+    title: str
+    isbn: Optional[str]
+    author: AuthorOut
+    category: CategoryOut
+    status: Status
