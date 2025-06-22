@@ -1,6 +1,6 @@
 from fastapi import HTTPException, status
 from sqlalchemy import and_, or_
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session
 
 from app.enums import Status
 from app.helpers.error_helper import Error
@@ -16,7 +16,7 @@ class BookCore:
         filter_array = [Book.id == book_id, Book.status != Status.deleted]
         if only_active:
             filter_array.append(Book.status == Status.active)
-        book = db.query(Book).filter(*filter_array).options(joinedload(Book.author), joinedload(Book.category)).first()
+        book = db.query(Book).filter(*filter_array).first()
         if not book:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=Error.record_not_found)
         return book
@@ -38,7 +38,7 @@ class BookCore:
         else:
             filter_array.append(and_(Book.status != Status.deleted))
 
-        return db.query(Book).filter(*filter_array).options(joinedload(Book.author), joinedload(Book.category)).all()
+        return db.query(Book).filter(*filter_array).all()
 
     def create_book(self, db: Session, data: BookIn):
         book = Book(
