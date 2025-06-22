@@ -19,7 +19,7 @@ def get_all_books(
     return book_core.get_all_books(db=db)
 
 
-@router.get("/{book_id}", response_model=BookListOut, summary="Kitap Detayı")
+@router.get("/{book_id}", response_model=BookOut, summary="Kitap Detayı")
 def get_book_detail(
     book_id: int,
     db: Session = Depends(get_db),
