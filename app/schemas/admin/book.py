@@ -5,6 +5,16 @@ from app.enums import Status
 from app.schemas.base import BaseSchema
 
 
+class AuthorOut(BaseSchema):
+    id: int
+    name: str
+
+
+class CategoryOut(BaseSchema):
+    id: int
+    name: str
+
+
 class BookIn(BaseSchema):
     title: str
     isbn: str
@@ -23,8 +33,8 @@ class BookOut(BaseSchema):
     date_modified: datetime
     title: str
     isbn: Optional[str]
-    author_id: int
-    category_id: int
+    author: AuthorOut
+    category: CategoryOut
     published_year: Optional[int]
     page_count: Optional[int]
     barcode: int
@@ -36,6 +46,6 @@ class BookListOut(BaseSchema):
     id: int
     title: str
     isbn: Optional[str]
-    author_id: int
-    category_id: int
+    author: AuthorOut
+    category: CategoryOut
     status: Status
