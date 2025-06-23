@@ -29,17 +29,14 @@ class CategoryCore:
         # Aynı isimde kategori varsa hata döndür
         existing = db.query(Category).filter(Category.name == data.name, Category.status != Status.deleted).first()
         if existing:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="Category with this name already exists."
-            )
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=Error.category_name_exists)
 
         category = Category(
             name=data.name,
-            status=data.status or Status.passive,
+            status=data.status,
         )
         db.add(category)
         db.commit()
-        db.refresh(category)
         return category
 
     def update_category(self, db: Session, category_id: int, data: CategoryIn):
@@ -53,15 +50,12 @@ class CategoryCore:
                 .first()
             )
             if existing:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST, detail="Category with this name already exists."
-                )
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=Error.category_name_exists)
 
         category.name = data.name
         category.status = data.status or category.status
 
         db.commit()
-        db.refresh(category)
         return category
 
     def delete_category(self, db: Session, category_id: int):
