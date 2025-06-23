@@ -54,7 +54,6 @@ class CategoryCore:
 
         category.name = data.name
         category.status = data.status or category.status
-
         db.commit()
         return category
 
