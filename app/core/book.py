@@ -42,6 +42,7 @@ class BookCore:
 
     def create_book(self, db: Session, data: BookIn):
         # ISBN benzersizlik kontrolü (deleted hariç)
+        exists = None
         if data.isbn:
             exists = (
                 db.query(Book).filter(Book.isbn == data.isbn, Book.status.in_([Status.active, Status.passive])).first()
@@ -50,7 +51,7 @@ class BookCore:
         if exists:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
-                detail="Bu ISBN ile zaten aktif veya pasif bir kitap kaydı mevcut.",
+                detail=Error.book_isbn_exists,
             )
 
         book = Book(
