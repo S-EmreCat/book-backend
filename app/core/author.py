@@ -33,17 +33,16 @@ class AuthorCore:
         # Aynı isimde kayıt varsa hata verelim
         existing = db.query(Author).filter(and_(Author.name == data.name, Author.status != Status.deleted)).first()
         if existing:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Author name already exists")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=Error.author_already_exists)
 
         author = Author(
             name=data.name,
             description=data.description,
             image_url=data.image_url,
-            status=data.status or Status.passive,
+            status=data.status,
         )
         db.add(author)
         db.commit()
-        db.refresh(author)
         return author
 
     def update_author(self, db: Session, author_id: int, data: AuthorIn):
@@ -57,7 +56,7 @@ class AuthorCore:
                 .first()
             )
             if existing:
-                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Author name already exists")
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=Error.author_already_exists)
 
         author.name = data.name
         author.description = data.description
