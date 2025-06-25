@@ -1,5 +1,4 @@
 from fastapi import HTTPException, status
-from sqlalchemy import and_
 from sqlalchemy.orm import Session
 
 from app.enums import Status
@@ -31,7 +30,7 @@ class AuthorCore:
 
     def create_author(self, db: Session, data: AuthorIn):
         # Aynı isimde kayıt varsa hata verelim
-        existing = db.query(Author).filter(and_(Author.name == data.name, Author.status != Status.deleted)).first()
+        existing = db.query(Author).filter(Author.name == data.name, Author.status != Status.deleted).first()
         if existing:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=Error.author_already_exists)
 
@@ -52,7 +51,7 @@ class AuthorCore:
         if data.name != author.name:
             existing = (
                 db.query(Author)
-                .filter(and_(Author.name == data.name, Author.id != author_id, Author.status != Status.deleted))
+                .filter(Author.name == data.name, Author.id != author_id, Author.status != Status.deleted)
                 .first()
             )
             if existing:
@@ -62,9 +61,7 @@ class AuthorCore:
         author.description = data.description
         author.image_url = data.image_url
         author.status = data.status
-
         db.commit()
-        db.refresh(author)
         return author
 
     def delete_author(self, db: Session, author_id: int):
