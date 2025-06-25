@@ -1,5 +1,4 @@
 from fastapi import HTTPException, status
-from sqlalchemy import and_
 from sqlalchemy.orm import Session
 
 from app.enums import Status
@@ -23,7 +22,7 @@ class CategoryCore:
 
     def get_all_categories(self, db: Session):
         # sadece active ve passive kategoriler
-        return db.query(Category).filter(and_(Category.status != Status.deleted)).all()
+        return db.query(Category).filter(Category.status != Status.deleted).all()
 
     def create_category(self, db: Session, data: CategoryIn):
         # Aynı isimde kategori varsa hata döndür
@@ -53,7 +52,7 @@ class CategoryCore:
                 raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=Error.category_name_exists)
 
         category.name = data.name
-        category.status = data.status or category.status
+        category.status = data.status
         db.commit()
         return category
 
