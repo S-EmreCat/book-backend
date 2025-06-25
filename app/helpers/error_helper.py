@@ -16,5 +16,8 @@ class Error(IntEnum):
     # Auth Errors
     invalid_login = 900, _("Kullanıcı email veya şifresi hatalı.")
 
+    # Author Errors
+    author_already_exists = 1001, _("Author name already exists")
+    
     # Category Errors
-    category_name_exists = 1001, _("Category with this name already exists.")
+    category_name_exists = 1002, _("Category with this name already exists.")
