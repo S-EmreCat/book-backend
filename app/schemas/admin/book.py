@@ -23,8 +23,8 @@ class BookIn(BaseSchema):
     author_id: int
     category_id: int
     published_year: Optional[int]
-    page_count: Optional[int]
-    barcode: int
+    page_count: Optional[int] = Field(default=None, ge=1)
+    barcode: int = Field(ge=2)
     description: Optional[str]
     status: Optional[Status]
 
@@ -34,20 +34,6 @@ class BookIn(BaseSchema):
         if year is not None and year > datetime.now().year:
             raise ValueError("Yayın yılı gelecekte olamaz.")
         return year
-
-    @field_validator("page_count")
-    @classmethod
-    def validate_page_count(cls, page_count):
-        if page_count is not None and page_count <= 0:
-            raise ValueError("Sayfa sayısı 0'dan büyük olmalıdır.")
-        return page_count
-
-    @field_validator("barcode")
-    @classmethod
-    def validate_barcode(cls, barcode):
-        if barcode <= 0:
-            raise ValueError("Barkod pozitif olmalıdır.")
-        return barcode
 
 
 class BookOut(BaseSchema):
