@@ -15,3 +15,6 @@ class Error(IntEnum):
 
     # Auth Errors
     invalid_login = 900, _("Kullanıcı email veya şifresi hatalı.")
+
+    # Book Errors
+    book_isbn_exists = -6, _("Bu ISBN ile zaten bir kitap mevcut.")
