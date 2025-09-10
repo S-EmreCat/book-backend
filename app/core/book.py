@@ -41,17 +41,14 @@ class BookCore:
         return db.query(Book).filter(*filter_array).all()
 
     def create_book(self, db: Session, data: BookIn):
-        # ISBN benzersizlik kontrolü (deleted hariç)
+        # ISBN benzersizlik kontrolü (deleted hariç - active veya passive kontrol)
         if data.isbn:
-            exists = (
-                db.query(Book).filter(Book.isbn == data.isbn, Book.status.in_(Book.status != Status.deleted)).first()
-            )
+            exists = db.query(Book).filter(Book.isbn == data.isbn, Book.status != Status.deleted).first()
             if exists:
                 raise HTTPException(
                     status_code=status.HTTP_409_CONFLICT,
                     detail=Error.book_isbn_exists,
                 )
-
         book = Book(
             title=data.title,
             isbn=data.isbn,
