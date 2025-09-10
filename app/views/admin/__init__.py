@@ -6,7 +6,9 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.database.database import SessionLocal
 from app.views.admin.endpoints.auth import router as auth_router
+from app.views.admin.endpoints.author import router as author_router
 from app.views.admin.endpoints.book import router as book_router
+from app.views.admin.endpoints.category import router as category_router
 
 app = FastAPI(
     title="Admin Panel",
@@ -15,6 +17,8 @@ app = FastAPI(
 
 app.include_router(auth_router, prefix="/auth", tags=["Auth"])
 app.include_router(book_router, prefix="/book", tags=["Book"])
+app.include_router(author_router, prefix="/author", tags=["Author"])
+app.include_router(category_router, prefix="/category", tags=["Category"])
 
 
 @app.exception_handler(StarletteHTTPException)
