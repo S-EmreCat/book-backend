@@ -10,3 +10,8 @@ class LoginIn(BaseSchema):
 
 class LoginOut(BaseSchema):
     access_token: str
+
+
+class ChangePasswordIn(BaseSchema):
+    current_password: str = Field(..., example="Admin1234")
+    new_password: str = Field(..., example="YeniSifre456")
