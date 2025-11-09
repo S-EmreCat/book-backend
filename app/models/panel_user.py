@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Enum, String
-from sqlalchemy.orm import column_property
+from sqlalchemy.orm import column_property, relationship
 
 from app.enums import Status
 from app.models.base import Base
@@ -15,6 +15,8 @@ class PanelUser(Base):
     phone_number = Column(String(15), nullable=False)
     password_hash = Column(String(120), nullable=False)
     status = Column(Enum(Status), nullable=False, default=Status.active)
+
+    login_histories = relationship("PanelUserLoginHistory", back_populates="panel_user", lazy="selectin")
 
 
 # TODO: panel_user_login_history

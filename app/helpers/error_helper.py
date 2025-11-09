@@ -18,6 +18,6 @@ class Error(IntEnum):
 
     # Author Errors
     author_already_exists = 1001, _("Author name already exists")
-    
+
     # Category Errors
     category_name_exists = 1002, _("Category with this name already exists.")
