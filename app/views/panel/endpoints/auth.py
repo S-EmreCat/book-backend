@@ -1,8 +1,44 @@
-from fastapi import APIRouter
+import traceback
+
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+
+from app.core.auth import auth_core
+from app.core.user import user_core
+from app.schemas.panel.auth import LoginIn, LoginOut, RegisterIn
+from app.views.deps import get_db
 
 router = APIRouter()
 
 
-@router.get("/test")
-def get_test_endpoint():
-    return 200
+@router.post("/register", summary="Kullanıcı kayıt")
+def register(
+    data: RegisterIn,
+    db: Session = Depends(get_db),
+):
+    try:
+        user_core.create_user(db=db, data=data)
+        return {"message": "Kayıt başarıyla oluşturuldu."}
+    except HTTPException:
+        raise
+    except Exception:
+        traceback.print_exc()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal Server Error",
+        )
+
+
+@router.post("/login", response_model=LoginOut, summary="Kullanıcı girişi")
+def login(
+    data: LoginIn,
+    db: Session = Depends(get_db),
+):
+    try:
+        user = user_core.authenticate_user(db=db, email=data.email, password=data.password)
+        return auth_core.user_login(user=user)
+    except HTTPException:
+        raise
+    except Exception:
+        traceback.print_exc()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error")
