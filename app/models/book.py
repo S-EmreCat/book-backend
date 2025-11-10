@@ -9,7 +9,7 @@ class Book(Base):
     __tablename__ = "book"
 
     title = Column(String(256), nullable=False)
-    isbn = Column(String(20), unique=True, nullable=True)  # Uluslararası standart kitap numarası
+    isbn = Column(String(20), nullable=True)  # Uluslararası standart kitap numarası
     author_id = Column(Integer, ForeignKey("author.id"))
     category_id = Column(Integer, ForeignKey("category.id"))
 
