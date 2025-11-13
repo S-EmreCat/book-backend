@@ -23,3 +23,5 @@ class Error(IntEnum):
 
     # Category Errors
     category_name_exists = 1002, _("Category with this name already exists.")
+    # Book Errors
+    book_isbn_exists = 1003, _("Bu ISBN ile zaten aktif veya pasif bir kitap kaydı mevcut.")
