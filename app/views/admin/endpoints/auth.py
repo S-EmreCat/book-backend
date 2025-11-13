@@ -20,10 +20,10 @@ def login(
 ):
     panel_user = panel_user_core.get_panel_user_by_email(db=db, email=data.email)
     if not panel_user:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=Error.invalid_login)
+        raise HTTPException(status_code=status.HTTP_401_BAD_REQUEST, detail=Error.invalid_login)
 
     if not hash_helper.verify(panel_user.password_hash, data.password):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=Error.invalid_login)
+        raise HTTPException(status_code=status.HTTP_401_BAD_REQUEST, detail=Error.invalid_login)
 
     # Login başarılıysa token oluştur
     login_result = auth_core.panel_user_login(panel_user=panel_user)
@@ -31,12 +31,12 @@ def login(
     ip_address = request.client.host if request.client else None
     user_agent = request.headers.get("user-agent")
 
-    login_history = PanelUserLoginHistory(
-        panel_user_id=panel_user.id,
-        ip_address=ip_address,
-        user_agent=user_agent,
+    panel_user.login_histories.append(
+        PanelUserLoginHistory(
+            ip_address=ip_address,
+            user_agent=user_agent,
+        )
     )
-    db.add(login_history)
     db.commit()
 
     return login_result
