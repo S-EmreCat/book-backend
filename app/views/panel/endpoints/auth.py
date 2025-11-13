@@ -1,6 +1,4 @@
-import traceback
-
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.core.auth import auth_core
@@ -16,17 +14,8 @@ def register(
     data: RegisterIn,
     db: Session = Depends(get_db),
 ):
-    try:
-        user_core.create_user(db=db, data=data)
-        return {"message": "Kayıt başarıyla oluşturuldu."}
-    except HTTPException:
-        raise
-    except Exception:
-        traceback.print_exc()
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Internal Server Error",
-        )
+    user_core.create_user(db=db, data=data)
+    return {"message": "Kayıt başarıyla oluşturuldu."}
 
 
 @router.post("/login", response_model=PanelLoginOut, summary="Kullanıcı girişi")
@@ -34,11 +23,5 @@ def login(
     data: PanelLoginIn,
     db: Session = Depends(get_db),
 ):
-    try:
-        user = user_core.authenticate_user(db=db, email=data.email, password=data.password)
-        return auth_core.user_login(user=user)
-    except HTTPException:
-        raise
-    except Exception:
-        traceback.print_exc()
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error")
+    user = user_core.authenticate_user(db=db, email=data.email, password=data.password)
+    return auth_core.user_login(user=user)

@@ -49,10 +49,9 @@ class UserCore:
         return user
 
     def authenticate_user(self, db: Session, email: str, password: str) -> User:
-        user = db.query(User).filter(User.email == email, User.status != Status.deleted).first()
+        user = self.get_user_by_email(db=db, email=email)
 
         if not user or not hash_helper.verify(user.password_hash, password):
-            # Email yoksa da, şifre hatalıysa da aynı hata:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=Error.invalid_user_credentials,
