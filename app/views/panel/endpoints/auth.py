@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.core.auth import auth_core
 from app.core.user import user_core
-from app.schemas.panel.auth import LoginIn, LoginOut, RegisterIn
+from app.schemas.panel.auth import PanelLoginIn, PanelLoginOut, RegisterIn
 from app.views.deps import get_db
 
 router = APIRouter()
@@ -29,9 +29,9 @@ def register(
         )
 
 
-@router.post("/login", response_model=LoginOut, summary="Kullanıcı girişi")
+@router.post("/login", response_model=PanelLoginOut, summary="Kullanıcı girişi")
 def login(
-    data: LoginIn,
+    data: PanelLoginIn,
     db: Session = Depends(get_db),
 ):
     try:

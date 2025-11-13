@@ -29,10 +29,10 @@ class RegisterIn(BaseSchema):
         return v
 
 
-class LoginIn(BaseSchema):
+class PanelLoginIn(BaseSchema):
     email: EmailStr = Field(..., example="sample@sample.com")
     password: str = Field(..., example="User1234")
 
 
-class LoginOut(BaseSchema):
+class PanelLoginOut(BaseSchema):
     access_token: str

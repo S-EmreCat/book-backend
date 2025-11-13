@@ -46,7 +46,6 @@ class UserCore:
         )
         db.add(user)
         db.commit()
-        db.refresh(user)
         return user
 
     def authenticate_user(self, db: Session, email: str, password: str) -> User:

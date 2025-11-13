@@ -1,8 +1,8 @@
 from app.helpers.secret_helper import secret_helper
 from app.models import PanelUser
 from app.models.user import User
-from app.schemas.admin.auth import LoginOut as AdminLoginOut
-from app.schemas.panel.auth import LoginOut as PanelLoginOut
+from app.schemas.admin.auth import AdminLoginOut
+from app.schemas.panel.auth import PanelLoginOut
 
 
 class AuthCore:

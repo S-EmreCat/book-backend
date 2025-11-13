@@ -5,15 +5,15 @@ from app.core.auth import auth_core
 from app.core.panel_user import panel_user_core
 from app.helpers.error_helper import Error
 from app.helpers.hash_helper import hash_helper
-from app.schemas.admin.auth import LoginIn, LoginOut
+from app.schemas.admin.auth import AdminLoginIn, AdminLoginOut
 from app.views.deps import get_db
 
 router = APIRouter()
 
 
-@router.post("/login", response_model=LoginOut, summary="Giriş Yap")
+@router.post("/login", response_model=AdminLoginOut, summary="Giriş Yap")
 def login(
-    data: LoginIn,
+    data: AdminLoginIn,
     db: Session = Depends(get_db),
 ):
     panel_user = panel_user_core.get_panel_user_by_email(db=db, email=data.email)
