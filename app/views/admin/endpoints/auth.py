@@ -1,5 +1,3 @@
-import traceback
-
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -34,29 +32,19 @@ def login(
 def change_password(
     data: ChangePasswordIn, db: Session = Depends(get_db), current_user: PanelUser = Depends(get_current_panel_user)
 ):
-    try:
-        # current_user kontrolü
-        if not current_user:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=Error.invalid_login)
+    # Mevcut şifre doğrulaması
+    if not hash_helper.verify(current_user.password_hash, data.current_password):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=Error.invalid_current_password)
 
-        # Mevcut şifre doğrulaması
-        if not hash_helper.verify(current_user.password_hash, data.current_password):
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=Error.invalid_current_password)
+    # Yeni şifre eskiyle aynı mı?
+    if data.current_password == data.new_password:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=Error.new_password_same_as_old,
+        )
 
-        # Yeni şifre eskiyle aynı mı kontrol
-        if hash_helper.verify(current_user.password_hash, data.new_password):
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=Error.new_password_same_as_old)
+    # Yeni şifreyi hashleyip DB’ye kaydet
+    current_user.password_hash = hash_helper.get_password_hash(data.new_password)
+    db.commit()
 
-        # Yeni şifreyi hashleyip DB’ye kaydet
-        current_user.password_hash = hash_helper.get_password_hash(data.new_password)
-        db.commit()
-        db.refresh(current_user)
-
-        return {"message": "Şifre başarıyla güncellendi."}
-
-    except HTTPException:
-        raise  # Zaten uygun hata kodları fırlatıldı
-    except Exception:
-        # Hata loglama
-        traceback.print_exc()
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error")
+    return {"message": "Şifre başarıyla güncellendi."}
