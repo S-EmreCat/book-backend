@@ -12,6 +12,7 @@ class RegisterIn(BaseSchema):
     phone_number: str = Field(
         ...,
         example="+905321234567",
+        max_length=13,
         description="+90 ile başlamalı ve toplam 13 karakter olmalı",
     )
     birth_date: date | None = Field(default=None, example="1995-01-01", description="Opsiyonel alan")
