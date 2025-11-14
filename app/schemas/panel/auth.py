@@ -24,7 +24,7 @@ class RegisterIn(BaseSchema):
         if not v.startswith("+90"):
             raise ValueError("Telefon numarası +90 ile başlamalı.")
 
-        if len(v) != 13 or not v[3:].isdigit():
+        if not v[3:].isdigit():
             raise ValueError("Telefon numarası formatı hatalı. Örn: +905321234567")
 
         return v
