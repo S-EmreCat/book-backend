@@ -5,7 +5,7 @@ from app.core.auth import auth_core
 from app.core.panel_user import panel_user_core
 from app.helpers.error_helper import Error
 from app.helpers.hash_helper import hash_helper
-from app.models.panel_user_login_history import PanelUserLoginHistory
+from app.models.panel_user import PanelUserLoginHistory
 from app.schemas.admin.auth import LoginIn, LoginOut
 from app.views.deps import get_db
 
