@@ -40,6 +40,9 @@ class BookCore:
 
         return db.query(Book).filter(*filter_array).all()
 
+    def gel_active_books(self, db: Session):
+        return book_core.get_all_books(db=db, search=None, status=Status.active)
+
     def create_book(self, db: Session, data: BookIn):
         # ISBN benzersizlik kontrolü (deleted hariç - active veya passive kontrol)
         if data.isbn:
