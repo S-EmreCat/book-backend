@@ -19,10 +19,9 @@ class Error(IntEnum):
     user_phone_exists = 902, _("Bu telefon numarası ile zaten bir kullanıcı mevcut.")
     invalid_user_credentials = 903, _("E-posta veya şifre hatalı.")
     user_not_active = 904, _("Bu kullanıcı sisteme giriş yapamaz.")
-    
+
     invalid_current_password = 905, _("Mevcut şifre yanlıştır.")
     new_password_same_as_old = 906, _("Yeni şifre mevcut şifreyle aynı olamaz.")
-
 
     # Author Errors
     author_already_exists = 1001, _("Author name already exists")
