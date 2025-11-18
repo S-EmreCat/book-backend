@@ -10,6 +10,7 @@ from app.views.admin.endpoints.author import router as author_router
 from app.views.admin.endpoints.book import router as book_router
 from app.views.admin.endpoints.category import router as category_router
 from app.views.panel.endpoints import auth as panel_auth_router
+from app.views.panel.endpoints import category as panel_category_router
 
 app = FastAPI(
     title="Admin Panel",
@@ -21,6 +22,7 @@ app.include_router(book_router, prefix="/book", tags=["Book"])
 app.include_router(author_router, prefix="/author", tags=["Author"])
 app.include_router(category_router, prefix="/category", tags=["Category"])
 app.include_router(panel_auth_router.router, prefix="/panel/auth", tags=["Panel Auth"])
+app.include_router(panel_category_router.router, prefix="/panel/category", tags=["Category"])
 
 
 @app.exception_handler(StarletteHTTPException)

@@ -24,6 +24,10 @@ class CategoryCore:
         # sadece active ve passive kategoriler
         return db.query(Category).filter(Category.status != Status.deleted).all()
 
+    # sadece active kategoriler
+    def get_all_active_categories(self, db: Session):
+        return db.query(Category).filter(Category.status == Status.active).all()
+
     def create_category(self, db: Session, data: CategoryIn):
         # Aynı isimde kategori varsa hata döndür
         existing = db.query(Category).filter(Category.name == data.name, Category.status != Status.deleted).first()
