@@ -28,6 +28,10 @@ class AuthorCore:
             filters.append(Author.status != Status.deleted)
         return db.query(Author).filter(*filters).all()
 
+    # Aktif yazarlar
+    def get_active_authors(self, db: Session):
+        return self.get_all_authors(db=db, status=Status.active)
+
     def create_author(self, db: Session, data: AuthorIn):
         # Aynı isimde kayıt varsa hata verelim
         existing = db.query(Author).filter(Author.name == data.name, Author.status != Status.deleted).first()
