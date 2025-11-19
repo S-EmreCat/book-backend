@@ -5,7 +5,7 @@ from app.database import seed_data
 
 
 def initial_seed(db: Session):
-    db.bulk_save_objects([models.PanelUser(**c) for c in seed_data.panel_user])
+    db.bulk_save_objects([models.AdminUser(**c) for c in seed_data.admin_user])
     db.flush()
 
     db.bulk_save_objects([models.Category(**c) for c in seed_data.categories])
