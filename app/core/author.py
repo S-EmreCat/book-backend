@@ -28,15 +28,14 @@ class AuthorCore:
             filters.append(Author.status != Status.deleted)
         return db.query(Author).filter(*filters).all()
 
-    # Aktif yazarlar
-    def get_active_authors(self, db: Session):
-        return self.get_all_authors(db=db, status=Status.active)
-
     def create_author(self, db: Session, data: AuthorIn):
         # Aynı isimde kayıt varsa hata verelim
         existing = db.query(Author).filter(Author.name == data.name, Author.status != Status.deleted).first()
         if existing:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=Error.author_already_exists)
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=Error.author_already_exists,
+            )
 
         author = Author(
             name=data.name,
@@ -55,11 +54,18 @@ class AuthorCore:
         if data.name != author.name:
             existing = (
                 db.query(Author)
-                .filter(Author.name == data.name, Author.id != author_id, Author.status != Status.deleted)
+                .filter(
+                    Author.name == data.name,
+                    Author.id != author_id,
+                    Author.status != Status.deleted,
+                )
                 .first()
             )
             if existing:
-                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=Error.author_already_exists)
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=Error.author_already_exists,
+                )
 
         author.name = data.name
         author.description = data.description
