@@ -20,15 +20,22 @@ class CategoryCore:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=Error.record_not_found)
         return category
 
-    def get_all_categories(self, db: Session):
+    # status parametresi ile aktif/pasif tüm kategoriler veya sadece aktif kategoriler getirilebilir
+    def get_all_categories(self, db: Session, status: Status = None):
+        query = db.query(Category).filter(Category.status != Status.deleted)
+        if status is not None:
+            query = query.filter(Category.status == status)
         # sadece active ve passive kategoriler
-        return db.query(Category).filter(Category.status != Status.deleted).all()
+        return query.all()
 
     def create_category(self, db: Session, data: CategoryIn):
         # Aynı isimde kategori varsa hata döndür
         existing = db.query(Category).filter(Category.name == data.name, Category.status != Status.deleted).first()
         if existing:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=Error.category_name_exists)
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=Error.category_name_exists,
+            )
 
         category = Category(
             name=data.name,
@@ -45,11 +52,18 @@ class CategoryCore:
         if data.name != category.name:
             existing = (
                 db.query(Category)
-                .filter(Category.name == data.name, Category.id != category_id, Category.status != Status.deleted)
+                .filter(
+                    Category.name == data.name,
+                    Category.id != category_id,
+                    Category.status != Status.deleted,
+                )
                 .first()
             )
             if existing:
-                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=Error.category_name_exists)
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=Error.category_name_exists,
+                )
 
         category.name = data.name
         category.status = data.status
