@@ -43,11 +43,16 @@ def login(
 
 @router.put("/change-password", summary="Panel kullanıcısı şifre değiştirme")
 def change_password(
-    data: ChangePasswordIn, db: Session = Depends(get_db), current_user: AdminUser = Depends(get_current_admin_user)
+    data: ChangePasswordIn,
+    db: Session = Depends(get_db),
+    current_user: AdminUser = Depends(get_current_admin_user),
 ):
     # Mevcut şifre doğrulaması
     if not hash_helper.verify(current_user.password_hash, data.current_password):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=Error.invalid_current_password)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=Error.invalid_current_password,
+        )
 
     # Yeni şifre eskiyle aynı mı?
     if data.current_password == data.new_password:
