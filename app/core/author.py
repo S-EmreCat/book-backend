@@ -17,7 +17,10 @@ class AuthorCore:
             filters.append(Author.status == Status.active)
         author = db.query(Author).filter(*filters).first()
         if not author:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=Error.record_not_found)
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=Error.author_not_found,
+            )
         return author
 
     def get_all_authors(self, db: Session, status=None):
@@ -32,7 +35,10 @@ class AuthorCore:
         # Aynı isimde kayıt varsa hata verelim
         existing = db.query(Author).filter(Author.name == data.name, Author.status != Status.deleted).first()
         if existing:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=Error.author_already_exists)
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=Error.author_already_exists,
+            )
 
         author = Author(
             name=data.name,
@@ -51,11 +57,18 @@ class AuthorCore:
         if data.name != author.name:
             existing = (
                 db.query(Author)
-                .filter(Author.name == data.name, Author.id != author_id, Author.status != Status.deleted)
+                .filter(
+                    Author.name == data.name,
+                    Author.id != author_id,
+                    Author.status != Status.deleted,
+                )
                 .first()
             )
             if existing:
-                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=Error.author_already_exists)
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=Error.author_already_exists,
+                )
 
         author.name = data.name
         author.description = data.description

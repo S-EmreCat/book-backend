@@ -2,11 +2,11 @@ from fastapi import HTTPException, status
 from sqlalchemy import and_, or_
 from sqlalchemy.orm import Session
 
+from app.core.author import author_core
+from app.core.category import category_core
 from app.enums import Status
 from app.helpers.error_helper import Error
 from app.models import Book
-from app.models.author import Author
-from app.models.category import Category
 from app.schemas.admin.book import BookIn
 
 
@@ -53,27 +53,15 @@ class BookCore:
                 )
 
         # author_id controll
-        author_exists = db.query(Author.id).filter(Author.id == data.author_id, Author.status != Status.deleted).first()
-        if not author_exists:
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail=Error.author_not_found,
-            )
-
+        author = author_core.get_author_by_id(db=db, author_id=data.author_id)
         # category_id controll
-        category_exists = (
-            db.query(Category.id).filter(Category.id == data.category_id, Category.status != Status.deleted).first()
-        )
-        if not category_exists:
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail=Error.category_not_found,
-            )
+        category = category_core.get_category_by_id(db=db, category_id=data.category_id)
+
         book = Book(
             title=data.title,
             isbn=data.isbn,
-            author_id=data.author_id,
-            category_id=data.category_id,
+            author_id=author.id,
+            category_id=category.id,
             published_year=data.published_year,
             page_count=data.page_count,
             barcode=data.barcode,

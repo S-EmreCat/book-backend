@@ -17,7 +17,7 @@ class CategoryCore:
             filter_array.append(Category.status == Status.active)
         category = db.query(Category).filter(*filter_array).first()
         if not category:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=Error.record_not_found)
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=Error.category_not_found)
         return category
 
     # status parametresi ile aktif/pasif tüm kategoriler veya sadece aktif kategoriler getirilebilir
