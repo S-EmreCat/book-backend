@@ -5,6 +5,8 @@ from sqlalchemy.orm import Session
 from app.enums import Status
 from app.helpers.error_helper import Error
 from app.models import Book
+from app.models.author import Author
+from app.models.category import Category
 from app.schemas.admin.book import BookIn
 
 
@@ -41,7 +43,7 @@ class BookCore:
         return db.query(Book).filter(*filter_array).all()
 
     def create_book(self, db: Session, data: BookIn):
-        # ISBN benzersizlik kontrolü (deleted hariç - active veya passive kontrol)
+        # ISBN uniqueness check (excluding deleted - check active or passive)
         if data.isbn:
             exists = db.query(Book).filter(Book.isbn == data.isbn, Book.status != Status.deleted).first()
             if exists:
@@ -49,6 +51,24 @@ class BookCore:
                     status_code=status.HTTP_409_CONFLICT,
                     detail=Error.book_isbn_exists,
                 )
+
+        # author_id controll
+        author_exists = db.query(Author.id).filter(Author.id == data.author_id, Author.status != Status.deleted).first()
+        if not author_exists:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=Error.author_not_found,
+            )
+
+        # category_id controll
+        category_exists = (
+            db.query(Category.id).filter(Category.id == data.category_id, Category.status != Status.deleted).first()
+        )
+        if not category_exists:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=Error.category_not_found,
+            )
         book = Book(
             title=data.title,
             isbn=data.isbn,

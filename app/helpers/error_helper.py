@@ -25,8 +25,10 @@ class Error(IntEnum):
 
     # Author Errors
     author_already_exists = 1001, _("Author name already exists")
+    author_not_found = 1004, _("Author not found.")
 
     # Category Errors
     category_name_exists = 1002, _("Category with this name already exists.")
+    category_not_found = 1005, _("Category not found.")
     # Book Errors
     book_isbn_exists = 1003, _("Bu ISBN ile zaten aktif veya pasif bir kitap kaydı mevcut.")
