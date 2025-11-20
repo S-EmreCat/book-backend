@@ -58,6 +58,7 @@ class BookCore:
             page_count=data.page_count,
             barcode=data.barcode,
             description=data.description,
+            status=data.status,
         )
         db.add(book)
         db.commit()
