@@ -16,7 +16,7 @@ def get_all_books(
     db: Session = Depends(get_db),
     panel_user: AdminUser = Depends(get_current_admin_user),
 ):
-    return book_core.get_all_books(db=db)
+    return book_core.book_core.get_all_books(db=db)
 
 
 @router.get("/{book_id}", response_model=BookOut, summary="Kitap Detayı")

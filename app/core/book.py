@@ -1,5 +1,5 @@
 from fastapi import HTTPException, status
-from sqlalchemy import and_, or_
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.enums import Status
@@ -23,8 +23,9 @@ class BookCore:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=Error.record_not_found)
         return book
 
-    def get_all_books(self, db: Session, search=None, status=None):
+    def get_all_books(self, db: Session, search=None, status=None, query=False):
         filter_array = []
+        queryset = db.query(Book)
         if search:
             search = f"%{search}%"
             filter_array.append(
@@ -34,34 +35,27 @@ class BookCore:
                     Book.barcode.ilike(search),
                 )
             )
-
-        if status is not None:
-            filter_array.append(and_(Book.status == status))
-        else:
-            filter_array.append(and_(Book.status != Status.deleted))
-
-        return db.query(Book).filter(*filter_array).all()
-
-    def get_all_active_books(self, db: Session):
-        """
-        GET /panel/book
-        Sadece aktif kitaplar + author_name + category_name
-        """
-        query = (
-            db.query(Book)
-            .join(Author, Author.id == Book.author_id)
-            .join(Category, Category.id == Book.category_id)
-            .filter(Book.status == Status.active)
-            .with_entities(
-                Book.id.label("id"),
-                Book.date_created.label("date_created"),
-                Book.title.label("title"),
-                Author.name.label("author_name"),
-                Category.name.label("category_name"),
-                Book.published_year.label("published_year"),
+        if query:
+            queryset = (
+                queryset.join(Author, Author.id == Book.author_id)
+                .join(Category, Category.id == Book.category_id)
+                .filter(Book.status == Status.active)
+                .with_entities(
+                    Book.id.label("id"),
+                    Book.date_created.label("date_created"),
+                    Book.title.label("title"),
+                    Author.name.label("author_name"),
+                    Category.name.label("category_name"),
+                    Book.published_year.label("published_year"),
+                )
             )
-        )
-        return query.all()
+        else:
+            if status is not None:
+                queryset = queryset.filter(Book.status == status)
+            else:
+                queryset = queryset.filter(Book.status != Status.deleted)
+
+        return queryset.filter(*filter_array).all()
 
     def get_active_book_detail(self, db: Session, book_id: int):
         """
