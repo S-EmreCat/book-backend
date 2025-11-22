@@ -17,7 +17,10 @@ class AuthorCore:
             filters.append(Author.status == Status.active)
         author = db.query(Author).filter(*filters).first()
         if not author:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=Error.record_not_found)
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=Error.author_not_found,
+            )
         return author
 
     def get_all_authors(self, db: Session, status=None):
