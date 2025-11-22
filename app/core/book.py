@@ -2,6 +2,8 @@ from fastapi import HTTPException, status
 from sqlalchemy import and_, or_
 from sqlalchemy.orm import Session
 
+from app.core.author import author_core
+from app.core.category import category_core
 from app.enums import Status
 from app.helpers.error_helper import Error
 from app.models import Book
@@ -101,7 +103,7 @@ class BookCore:
         return row
 
     def create_book(self, db: Session, data: BookIn):
-        # ISBN benzersizlik kontrolü (deleted hariç - active veya passive kontrol)
+        # ISBN uniqueness check (excluding deleted - check active or passive)
         if data.isbn:
             exists = db.query(Book).filter(Book.isbn == data.isbn, Book.status != Status.deleted).first()
             if exists:
@@ -109,11 +111,17 @@ class BookCore:
                     status_code=status.HTTP_409_CONFLICT,
                     detail=Error.book_isbn_exists,
                 )
+
+        # author_id controll
+        author = author_core.get_author_by_id(db=db, author_id=data.author_id)
+        # category_id controll
+        category = category_core.get_category_by_id(db=db, category_id=data.category_id)
+
         book = Book(
             title=data.title,
             isbn=data.isbn,
-            author_id=data.author_id,
-            category_id=data.category_id,
+            author_id=author.id,
+            category_id=category.id,
             published_year=data.published_year,
             page_count=data.page_count,
             barcode=data.barcode,
