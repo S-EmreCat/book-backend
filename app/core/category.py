@@ -26,7 +26,7 @@ class CategoryCore:
         if status is not None:
             query = query.filter(Category.status == status)
         # sadece active ve passive kategoriler
-        return query.all()
+        return query
 
     def create_category(self, db: Session, data: CategoryIn):
         # Aynı isimde kategori varsa hata döndür

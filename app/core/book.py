@@ -42,14 +42,14 @@ class BookCore:
         else:
             filter_array.append(and_(Book.status != Status.deleted))
 
-        return db.query(Book).filter(*filter_array).all()
+        return db.query(Book).filter(*filter_array)
 
     def get_all_active_books(self, db: Session):
         """
         GET /panel/book
         Sadece aktif kitaplar + author_name + category_name
         """
-        query = (
+        return (
             db.query(Book)
             .join(Author, Author.id == Book.author_id)
             .join(Category, Category.id == Book.category_id)
@@ -63,7 +63,6 @@ class BookCore:
                 Book.published_year.label("published_year"),
             )
         )
-        return query.all()
 
     def get_active_book_detail(self, db: Session, book_id: int):
         """

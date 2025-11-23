@@ -1,7 +1,9 @@
 from fastapi import APIRouter, Depends
+from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from app.core.book import book_core
+from app.schemas.pagination import CustomPage
 from app.schemas.panel.book import BookDetailOut, BookListOut
 from app.views.deps import get_db
 from app.views.panel.deps import get_current_panel_user
@@ -11,14 +13,14 @@ router = APIRouter()
 
 @router.get(
     "",
-    response_model=list[BookListOut],
+    response_model=CustomPage[BookListOut],
     summary="Aktif kitapları listele",
 )
 def get_all_active_books(
     db: Session = Depends(get_db),
     panel_user=Depends(get_current_panel_user),
 ):
-    return book_core.get_all_active_books(db=db)
+    return paginate(db, book_core.get_all_active_books(db=db))
 
 
 @router.get(

@@ -29,7 +29,7 @@ class AuthorCore:
             filters.append(Author.status == status)
         else:
             filters.append(Author.status != Status.deleted)
-        return db.query(Author).filter(*filters).all()
+        return db.query(Author).filter(*filters)
 
     def create_author(self, db: Session, data: AuthorIn):
         author = Author(

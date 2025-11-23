@@ -2,12 +2,13 @@ import traceback
 
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
+from fastapi_pagination import add_pagination
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.database.database import SessionLocal
 from app.views.panel.endpoints.auth import router as auth_router
-from app.views.panel.endpoints.book import router as book_router
 from app.views.panel.endpoints.author import router as author_router
+from app.views.panel.endpoints.book import router as book_router
 from app.views.panel.endpoints.category import router as category_router
 
 app = FastAPI(
@@ -50,3 +51,6 @@ async def catch_exceptions_middleware(request: Request, call_next):
         db = getattr(request.state, "db", None)
         if db:
             db.close()
+
+
+add_pagination(app)
