@@ -23,39 +23,33 @@ class BookCore:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=Error.record_not_found)
         return book
 
-    def get_all_books(self, db: Session, search=None, status=None, query=False):
-        filter_array = []
-        queryset = db.query(Book)
+    def get_all_books(self, db: Session, search=None, status=None, with_entities=False):
+        query = db.query(Book)
+
+        if status is not None:
+            query = query.filter(Book.status == status)
+        else:
+            query = query.filter(Book.status != Status.deleted)
+
         if search:
             search = f"%{search}%"
-            filter_array.append(
+            query = query.filter(
                 or_(
                     Book.title.ilike(search),
                     Book.isbn.ilike(search),
                     Book.barcode.ilike(search),
                 )
             )
-        if query:
-            queryset = (
-                queryset.join(Author, Author.id == Book.author_id)
-                .join(Category, Category.id == Book.category_id)
-                .filter(Book.status == Status.active)
-                .with_entities(
-                    Book.id.label("id"),
-                    Book.date_created.label("date_created"),
-                    Book.title.label("title"),
-                    Author.name.label("author_name"),
-                    Category.name.label("category_name"),
-                    Book.published_year.label("published_year"),
-                )
+        if with_entities:
+            query = query.with_entities(
+                Book.id.label("id"),
+                Book.date_created.label("date_created"),
+                Book.title.label("title"),
+                Author.name.label("author_name"),
+                Category.name.label("category_name"),
+                Book.published_year.label("published_year"),
             )
-        else:
-            if status is not None:
-                queryset = queryset.filter(Book.status == status)
-            else:
-                queryset = queryset.filter(Book.status != Status.deleted)
-
-        return queryset.filter(*filter_array).all()
+        return query.all()
 
     def get_active_book_detail(self, db: Session, book_id: int):
         """
