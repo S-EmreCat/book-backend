@@ -30,6 +30,10 @@ class Error(IntEnum):
     # Category Errors
     category_name_exists = 1002, _("Category name already exists")
     category_not_found = 1005, _("Category not found.")
-    
+
     # Book Errors
     book_isbn_exists = 1003, _("ISBN already exists.")
+
+    # Favorite Errors
+    favorite_not_found = 1101, _("No favorite books found for the user.")
+    favorite_already_exists = 1102, _("Book is already in favorites.")

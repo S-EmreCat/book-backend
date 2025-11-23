@@ -2,6 +2,7 @@ import traceback
 
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
+from fastapi_pagination import add_pagination
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.database.database import SessionLocal
@@ -50,3 +51,6 @@ async def catch_exceptions_middleware(request: Request, call_next):
         db = getattr(request.state, "db", None)
         if db:
             db.close()
+
+
+add_pagination(app)
