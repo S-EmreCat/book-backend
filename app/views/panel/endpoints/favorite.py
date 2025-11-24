@@ -13,7 +13,7 @@ from app.views.panel.deps import get_current_panel_user
 router = APIRouter()
 
 
-@router.get("/favorites", response_model=CustomPage[BookListOut], summary="Favori Kitaplarını Listele")
+@router.get("/", response_model=CustomPage[BookListOut], summary="Favori Kitaplarını Listele")
 def get_favorite_books(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_panel_user),
@@ -22,7 +22,7 @@ def get_favorite_books(
     return paginate(query)
 
 
-@router.post("/{book_id}/favorite", response_model=MessageOut, summary="Favorilere Kitap Ekle")
+@router.post("/{book_id}", response_model=MessageOut, summary="Favorilere Kitap Ekle")
 def add_favorite_book(
     book_id: int,
     db: Session = Depends(get_db),
@@ -32,7 +32,7 @@ def add_favorite_book(
     return MessageOut(message="Favorilere kitap ekle")
 
 
-@router.delete("/{book_id}/favorite", response_model=MessageOut, summary="Favori Kitaplarından Çıkar")
+@router.delete("/{book_id}", response_model=MessageOut, summary="Favori Kitaplarından Çıkar")
 def remove_favorite_book(
     book_id: int,
     db: Session = Depends(get_db),
