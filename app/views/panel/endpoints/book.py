@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.core.book import book_core
+from app.enums import Status
 from app.schemas.panel.book import BookDetailOut, BookListOut
 from app.views.deps import get_db
 from app.views.panel.deps import get_current_panel_user
@@ -18,7 +19,7 @@ def get_all_active_books(
     db: Session = Depends(get_db),
     panel_user=Depends(get_current_panel_user),
 ):
-    return book_core.get_all_active_books(db=db)
+    return book_core.get_all_books(db=db, with_entities=True, status=Status.active)
 
 
 @router.get(
