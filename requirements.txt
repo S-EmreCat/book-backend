@@ -31,3 +31,4 @@ typing_extensions==4.13.2
 uvicorn==0.34.2
 virtualenv==20.31.2
 email-validator==2.3.0
+fastapi-pagination==0.15.0
