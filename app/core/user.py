@@ -65,5 +65,27 @@ class UserCore:
 
         return user
 
+    def get_user_list(
+        self,
+        db: Session,
+        email: Optional[str] = None,
+        phone_number: Optional[str] = None,
+        status: Optional[Status] = None,
+    ):
+        query = db.query(User)
+
+        filters = [User.status != Status.deleted]
+
+        if email:
+            filters.append(User.email.ilike(f"%{email}%"))
+
+        if phone_number:
+            filters.append(User.phone_number.ilike(f"%{phone_number}%"))
+
+        if status is not None:
+            filters.append(User.status == status)
+
+        return query.filter(*filters)
+
 
 user_core = UserCore()
