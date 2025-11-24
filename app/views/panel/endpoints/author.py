@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from app.core.author import author_core
 from app.enums import Status
 from app.models.user import User
+from app.schemas.pagination import CustomPage
 from app.schemas.panel.author import PanelAuthorDetailOut, PanelAuthorListOut
 from app.views.deps import get_db
 from app.views.panel.deps import get_current_panel_user
@@ -13,7 +14,7 @@ router = APIRouter()
 
 @router.get(
     "",
-    response_model=list[PanelAuthorListOut],
+    response_model=CustomPage[PanelAuthorListOut],
     summary="Aktif Yazarları Listele",
 )
 def get_authors(
