@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends
-from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from app.core.author import author_core
@@ -22,7 +21,7 @@ def get_authors(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_panel_user),
 ):
-    return paginate(db, author_core.get_all_authors(db=db, status=Status.active))
+    return author_core.get_all_authors(db=db, status=Status.active)
 
 
 @router.get("/{author_id}", response_model=PanelAuthorDetailOut, summary="Aktif Yazar Detayı")

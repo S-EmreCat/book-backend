@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends
-from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from app.core.category import category_core
@@ -21,7 +20,7 @@ def get_categories(
     db: Session = Depends(get_db),
     panel_user: User = Depends(get_current_panel_user),
 ):
-    return paginate(db, category_core.get_all_categories(db=db, status=True))
+    return category_core.get_all_categories(db=db)
 
 
 @router.get("/{category_id}", response_model=PanelCategoryOut, summary="Kategori Detayı")
@@ -30,4 +29,4 @@ def get_category_detail(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_panel_user),
 ):
-    return category_core.get_category_by_id(db, category_id, only_active=True)
+    return category_core.get_category_by_id(db, category_id)

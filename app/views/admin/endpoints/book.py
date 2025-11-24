@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends
-from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from app.core.book import book_core
@@ -18,7 +17,7 @@ def get_all_books(
     db: Session = Depends(get_db),
     panel_user: AdminUser = Depends(get_current_admin_user),
 ):
-    return paginate(db, book_core.get_all_books(db=db))
+    return book_core.get_all_books(db=db)
 
 
 @router.get("/{book_id}", response_model=BookOut, summary="Kitap Detayı")

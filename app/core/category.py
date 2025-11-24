@@ -1,4 +1,5 @@
 from fastapi import HTTPException, status
+from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from app.enums import Status
@@ -21,12 +22,12 @@ class CategoryCore:
         return category
 
     # status parametresi ile aktif/pasif tüm kategoriler veya sadece aktif kategoriler getirilebilir
-    def get_all_categories(self, db: Session, status: Status = None):
+    def get_all_categories(self, db: Session, only_active=True):
         query = db.query(Category).filter(Category.status != Status.deleted)
-        if status is not None:
-            query = query.filter(Category.status == status)
+        if only_active:
+            query = query.filter(Category.status == Status.active)
         # sadece active ve passive kategoriler
-        return query
+        return paginate(query)
 
     def create_category(self, db: Session, data: CategoryIn):
         # Aynı isimde kategori varsa hata döndür

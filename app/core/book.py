@@ -1,4 +1,5 @@
 from fastapi import HTTPException, status
+from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
@@ -51,7 +52,7 @@ class BookCore:
                 Category.name.label("category_name"),
                 Book.published_year.label("published_year"),
             )
-        return query.all()
+        return paginate(query)
 
     def get_active_book_detail(self, db: Session, book_id: int):
         """
