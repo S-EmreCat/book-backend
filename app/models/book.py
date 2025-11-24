@@ -23,7 +23,7 @@ class Book(Base):
     category = relationship("Category", foreign_keys=[category_id])
     author = relationship("Author", uselist=False)
 
-    Favorites = relationship("Favorite", back_populates="book", lazy="selectin")
+    favorites = relationship("Favorite", back_populates="book", lazy="selectin")
 
 
 # TODO: table: book_comment, book_rating, book_tag eklenebilir
