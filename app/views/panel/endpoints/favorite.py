@@ -21,12 +21,12 @@ def get_favorite_books(
 
 
 @router.post("/{book_id}", response_model=FavoriteOut, summary="Favorilere Kitap Ekle")
-def add_favorite_book(
+def create_favorite_book(
     book_id: int,
     db: Session = Depends(get_db),
     user: User = Depends(get_current_panel_user),
 ):
-    return favorite_core.add_favorite(db=db, user=user, book_id=book_id)
+    return favorite_core.create_favorite(db=db, user=user, book_id=book_id)
 
 
 @router.delete("/{book_id}", response_model=MessageOut, summary="Favori Kitaplarından Çıkar")

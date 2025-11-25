@@ -11,7 +11,7 @@ class Error(IntEnum):
         return obj
 
     # General Errors
-    record_not_found = -5, _("Kayıt bulunamadı.")
+    record_not_found = -5, _("Record not found.")
 
     # Auth Errors
     invalid_login = 900, _("Invalid email or password.")

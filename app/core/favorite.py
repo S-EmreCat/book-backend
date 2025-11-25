@@ -13,7 +13,7 @@ class FavoriteCore:
     def __init__(self) -> None:
         pass
 
-    def get_favorite(self, db: Session, user_id: int, book_id: int, raise_error: True):
+    def get_favorite(self, db: Session, user_id: int, book_id: int, raise_error: bool = True):
         query = (
             db.query(Favorite)
             .filter(
@@ -29,7 +29,7 @@ class FavoriteCore:
             )
         return query
 
-    def add_favorite(self, db: Session, user: User, book_id: int) -> Favorite:
+    def create_favorite(self, db: Session, user: User, book_id: int):
         # Kitap var mı ve aktif mi?
         book_core.get_book_by_id(db=db, book_id=book_id, only_active=True)
 
@@ -40,11 +40,29 @@ class FavoriteCore:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=Error.favorite_already_exists,
             )
-
         favorite = Favorite(user_id=user.id, book_id=book_id)
         db.add(favorite)
         db.commit()
-        return favorite
+
+        return (
+            db.query(
+                Favorite.id.label("id"),
+                Favorite.date_created.label("date_created"),
+                Book.id.label("book_id"),
+                Book.title.label("title"),
+                Author.name.label("author_name"),
+                Category.name.label("category_name"),
+                Book.published_year.label("published_year"),
+            )
+            .join(Book, Book.id == Favorite.book_id)
+            .join(Author, Author.id == Book.author_id)
+            .join(Category, Category.id == Book.category_id)
+            .filter(
+                Favorite.id == favorite.id,
+                Favorite.user_id == user.id,
+            )
+            .first()
+        )
 
     def remove_favorite(self, db: Session, user: User, book_id: int):
         favorite = self.get_favorite(db=db, user_id=user.id, book_id=book_id)
