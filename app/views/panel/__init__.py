@@ -13,7 +13,7 @@ from app.views.panel.endpoints.category import router as category_router
 
 app = FastAPI(
     title="User Panel",
-    swagger_ui_parameters={"docExpansion": "none"},
+    swagger_ui_parameters={"docExpansion": "none", "persistAuthorization": True},
 )
 
 app.include_router(auth_router, prefix="/panel", tags=["Auth"])
