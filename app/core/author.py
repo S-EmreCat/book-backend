@@ -1,4 +1,5 @@
 from fastapi import HTTPException, status
+from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from app.enums import Status
@@ -29,7 +30,7 @@ class AuthorCore:
             filters.append(Author.status == status)
         else:
             filters.append(Author.status != Status.deleted)
-        return db.query(Author).filter(*filters).all()
+        return paginate(db.query(Author).filter(*filters))
 
     def create_author(self, db: Session, data: AuthorIn):
         author = Author(

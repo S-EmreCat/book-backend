@@ -5,13 +5,14 @@ from app.core.book import book_core
 from app.models import AdminUser
 from app.schemas import MessageOut
 from app.schemas.admin.book import BookIn, BookListOut, BookOut
+from app.schemas.pagination import CustomPage
 from app.views.admin.deps import get_current_admin_user
 from app.views.deps import get_db
 
 router = APIRouter()
 
 
-@router.get("", response_model=list[BookListOut], summary="Tüm Kitapları Listele")
+@router.get("", response_model=CustomPage[BookListOut], summary="Tüm Kitapları Listele")
 def get_all_books(
     db: Session = Depends(get_db),
     panel_user: AdminUser = Depends(get_current_admin_user),

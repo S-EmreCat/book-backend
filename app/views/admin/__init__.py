@@ -2,6 +2,7 @@ import traceback
 
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
+from fastapi_pagination import add_pagination
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.database.database import SessionLocal
@@ -13,7 +14,7 @@ from app.views.admin.endpoints.user import router as user_router
 
 app = FastAPI(
     title="Admin Panel",
-    swagger_ui_parameters={"docExpansion": "none"},
+    swagger_ui_parameters={"docExpansion": "none", "persistAuthorization": True},
 )
 
 app.include_router(auth_router, prefix="/auth", tags=["Auth"])
@@ -52,3 +53,6 @@ async def catch_exceptions_middleware(request: Request, call_next):
         db = getattr(request.state, "db", None)
         if db:
             db.close()
+
+
+add_pagination(app)

@@ -1,5 +1,6 @@
 from fastapi import HTTPException, status
-from sqlalchemy import and_, or_
+from fastapi_pagination.ext.sqlalchemy import paginate
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.core.author import author_core
@@ -25,36 +26,25 @@ class BookCore:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=Error.record_not_found)
         return book
 
-    def get_all_books(self, db: Session, search=None, status=None):
-        filter_array = []
+    def get_all_books(self, db: Session, search=None, status=None, with_entities=False):
+        query = db.query(Book)
+
+        if status is not None:
+            query = query.filter(Book.status == status)
+        else:
+            query = query.filter(Book.status != Status.deleted)
+
         if search:
             search = f"%{search}%"
-            filter_array.append(
+            query = query.filter(
                 or_(
                     Book.title.ilike(search),
                     Book.isbn.ilike(search),
                     Book.barcode.ilike(search),
                 )
             )
-
-        if status is not None:
-            filter_array.append(and_(Book.status == status))
-        else:
-            filter_array.append(and_(Book.status != Status.deleted))
-
-        return db.query(Book).filter(*filter_array).all()
-
-    def get_all_active_books(self, db: Session):
-        """
-        GET /panel/book
-        Sadece aktif kitaplar + author_name + category_name
-        """
-        query = (
-            db.query(Book)
-            .join(Author, Author.id == Book.author_id)
-            .join(Category, Category.id == Book.category_id)
-            .filter(Book.status == Status.active)
-            .with_entities(
+        if with_entities:
+            query = query.with_entities(
                 Book.id.label("id"),
                 Book.date_created.label("date_created"),
                 Book.title.label("title"),
@@ -62,8 +52,7 @@ class BookCore:
                 Category.name.label("category_name"),
                 Book.published_year.label("published_year"),
             )
-        )
-        return query.all()
+        return paginate(query)
 
     def get_active_book_detail(self, db: Session, book_id: int):
         """

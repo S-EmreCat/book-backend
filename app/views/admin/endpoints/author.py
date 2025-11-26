@@ -5,13 +5,14 @@ from app.core.author import author_core
 from app.models import AdminUser
 from app.schemas import MessageOut
 from app.schemas.admin.author import AuthorIn, AuthorOut
+from app.schemas.pagination import CustomPage
 from app.views.admin.deps import get_current_admin_user
 from app.views.deps import get_db
 
 router = APIRouter()
 
 
-@router.get("", response_model=list[AuthorOut], summary="Tüm Yazarları Listele")
+@router.get("", response_model=CustomPage[AuthorOut], summary="Tüm Yazarları Listele")
 def get_all_authors(
     db: Session = Depends(get_db),
     panel_user: AdminUser = Depends(get_current_admin_user),
