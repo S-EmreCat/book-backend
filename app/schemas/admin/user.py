@@ -1,7 +1,5 @@
 from datetime import date
 
-from pydantic import field_validator
-
 from app.enums import Status
 from app.schemas.base import BaseSchema
 
@@ -28,11 +26,3 @@ class AdminUserDetailOut(BaseSchema):
 
 class AdminUserStatusUpdateIn(BaseSchema):
     status: Status
-
-    @field_validator("status")
-    @classmethod
-    def only_allow_active_or_passive(cls, v: Status) -> Status:
-        if v not in (Status.active, Status.passive):
-            # Pydantic tarafında direkt yakalansın
-            raise ValueError("Status sadece 'active' veya 'passive' olabilir.")
-        return v

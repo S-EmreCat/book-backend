@@ -1,6 +1,7 @@
 from typing import Optional
 
 from fastapi import HTTPException, status
+from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from app.enums import Status
@@ -81,11 +82,39 @@ class UserCore:
 
         if phone_number:
             filters.append(User.phone_number.ilike(f"%{phone_number}%"))
-
+        # deleted kullanıcıları görmek isterse
         if status is not None:
             filters.append(User.status == status)
 
-        return query.filter(*filters)
+        return paginate(query.filter(*filters))
+
+    def get_user_by_id(self, db: Session, user_id: int) -> User:
+        user = db.query(User).filter(User.id == user_id).first()
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=Error.user_not_found,
+            )
+        return user
+
+    def update_user(
+        self,
+        db: Session,
+        user_id: int,
+        new_status: Status,
+    ) -> User:
+        if new_status not in (Status.active, Status.passive):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=Error.invalid_status_for_update,
+            )
+
+        user = self.get_user_by_id(db=db, user_id=user_id)
+
+        user.status = new_status
+        db.add(user)
+        db.commit()
+        return user
 
 
 user_core = UserCore()

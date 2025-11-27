@@ -30,6 +30,10 @@ class Error(IntEnum):
     # Category Errors
     category_name_exists = 1002, _("Category name already exists")
     category_not_found = 1005, _("Category not found.")
-    
+
     # Book Errors
     book_isbn_exists = 1003, _("ISBN already exists.")
+
+    # User Errors
+    user_not_found = 1101, _("User not found.")
+    invalid_status_for_update = 1102, _("Status can only be 'active' or 'passive'.")
