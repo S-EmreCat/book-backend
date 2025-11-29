@@ -33,7 +33,6 @@ class Book(Base):
 
     @favorite_count.expression
     def favorite_count(cls):
-        # Query tarafında: SQL COUNT
         return select(func.count(Favorite.id)).where(Favorite.book_id == cls.id).correlate(cls).scalar_subquery()
 
 

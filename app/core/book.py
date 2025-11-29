@@ -1,6 +1,6 @@
 from fastapi import HTTPException, status
 from fastapi_pagination.ext.sqlalchemy import paginate
-from sqlalchemy import func, or_, select
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.core.author import author_core
@@ -10,16 +10,12 @@ from app.helpers.error_helper import Error
 from app.models import Book
 from app.models.author import Author
 from app.models.category import Category
-from app.models.favorite import Favorite
 from app.schemas.admin.book import BookIn
 
 
 class BookCore:
     def __init__(self):
         pass
-
-    def favorite_count(self):
-        return select(func.count(Favorite.id)).where(Favorite.book_id == Book.id).correlate(Book).scalar_subquery()
 
     def get_book_by_id(self, db: Session, book_id: int, only_active=True):
         filter_array = [Book.id == book_id, Book.status != Status.deleted]
@@ -47,9 +43,9 @@ class BookCore:
                     Book.barcode.ilike(search),
                 )
             )
-        favorite_count = func.coalesce(self.favorite_count(), 0).label("favorite_count")
 
         if with_entities:
+            favorite_count = Book.favorite_count.label("favorite_count")
             query = (
                 query.with_entities(
                     Book.id.label("id"),
@@ -70,12 +66,11 @@ class BookCore:
         GET /panel/book/{book_id}
         Sadece aktif kitap + detay alanları + favorite count
         """
-        favorite_count = func.coalesce(self.favorite_count(), 0).label("favorite_count")
+        favorite_count = Book.favorite_count.label("favorite_count")
         query = (
             db.query(Book)
             .join(Author, Author.id == Book.author_id)
             .join(Category, Category.id == Book.category_id)
-            .outerjoin(Favorite, Favorite.book_id == Book.id)
             .filter(
                 Book.id == book_id,
                 Book.status == Status.active,
