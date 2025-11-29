@@ -1,5 +1,5 @@
 from sqlalchemy import Boolean, Column, Date, Enum, String
-from sqlalchemy.orm import column_property
+from sqlalchemy.orm import column_property, relationship
 
 from app.enums import Status
 from app.models.base import Base
@@ -20,6 +20,8 @@ class User(Base):
 
     password_hash = Column(String(120), nullable=False)
     status = Column(Enum(Status), nullable=False, default=Status.active)
+
+    favorites = relationship("Favorite", back_populates="user", lazy="selectin")
 
 
 # TODO: table: user_login_history
