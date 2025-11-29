@@ -22,6 +22,7 @@ app.include_router(user_router, prefix="/user", tags=["User"])
 app.include_router(category_router, prefix="/category", tags=["Category"])
 app.include_router(book_router, prefix="/book", tags=["Book"])
 app.include_router(author_router, prefix="/author", tags=["Author"])
+app.include_router(favorite_router, prefix="/book/favorite", tags=["Book"])
 
 
 @app.exception_handler(StarletteHTTPException)
