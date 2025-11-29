@@ -10,6 +10,7 @@ class BookListOut(BaseSchema):
     title: str
     author_name: str
     category_name: str
+    favorite_count: int
     published_year: Optional[int]
 
 
@@ -19,6 +20,7 @@ class BookDetailOut(BaseSchema):
     title: str
     author_name: str
     category_name: str
+    favorite_count: int
     published_year: Optional[int]
     page_count: Optional[int]
     isbn: Optional[str]

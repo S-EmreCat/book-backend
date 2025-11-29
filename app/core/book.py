@@ -43,22 +43,30 @@ class BookCore:
                     Book.barcode.ilike(search),
                 )
             )
+
         if with_entities:
-            query = query.with_entities(
-                Book.id.label("id"),
-                Book.date_created.label("date_created"),
-                Book.title.label("title"),
-                Author.name.label("author_name"),
-                Category.name.label("category_name"),
-                Book.published_year.label("published_year"),
+            favorite_count = Book.favorite_count.label("favorite_count")
+            query = (
+                query.with_entities(
+                    Book.id.label("id"),
+                    Book.date_created.label("date_created"),
+                    Book.title.label("title"),
+                    Author.name.label("author_name"),
+                    Category.name.label("category_name"),
+                    Book.published_year.label("published_year"),
+                    favorite_count,
+                )
+                .join(Author, Author.id == Book.author_id)
+                .join(Category, Category.id == Book.category_id)
             )
         return paginate(query)
 
     def get_active_book_detail(self, db: Session, book_id: int):
         """
         GET /panel/book/{book_id}
-        Sadece aktif kitap + detay alanları
+        Sadece aktif kitap + detay alanları + favorite count
         """
+        favorite_count = Book.favorite_count.label("favorite_count")
         query = (
             db.query(Book)
             .join(Author, Author.id == Book.author_id)
@@ -78,6 +86,7 @@ class BookCore:
                 Book.isbn.label("isbn"),
                 Book.barcode.label("barcode"),
                 Book.description.label("description"),
+                favorite_count,
             )
         )
 
