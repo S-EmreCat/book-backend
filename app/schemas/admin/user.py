@@ -1,6 +1,6 @@
 from datetime import date
 
-from app.enums import Status
+from app.enums import Status, StatusInput
 from app.schemas.base import BaseSchema
 
 
@@ -9,6 +9,7 @@ class UserListOut(BaseSchema):
     full_name: str
     email: str
     phone_number: str
+    status: Status
 
 
 class UserDetailOut(BaseSchema):
@@ -25,4 +26,4 @@ class UserDetailOut(BaseSchema):
 
 
 class UserStatusUpdateIn(BaseSchema):
-    status: Status
+    status: StatusInput

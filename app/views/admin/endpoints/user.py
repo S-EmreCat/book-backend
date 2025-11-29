@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 from app.core.user import user_core
-from app.enums import Status
+from app.enums import StatusInput
 from app.models import AdminUser
 from app.schemas.admin.user import UserDetailOut, UserListOut, UserStatusUpdateIn
 from app.schemas.pagination import CustomPage
@@ -16,7 +16,7 @@ router = APIRouter()
 def get_all_users(
     email: str | None = Query(default=None, description="Email ile filtrele", example="sample@sample.com"),
     phone_number: str | None = Query(default=None, description="Telefon ile filtrele", example="905321234567"),
-    status: Status | None = Query(default=None, description="Status ile filtrele", example="active"),
+    status: StatusInput | None = Query(default=None, description="Status ile filtrele", example="active"),
     db: Session = Depends(get_db),
     panel_user: AdminUser = Depends(get_current_admin_user),
 ):
