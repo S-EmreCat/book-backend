@@ -48,6 +48,7 @@ class BookOut(BaseSchema):
     page_count: Optional[int]
     barcode: int
     description: Optional[str]
+    favorite_count: int
     status: Status
 
 
@@ -58,3 +59,4 @@ class BookListOut(BaseSchema):
     author: AuthorOut
     category: CategoryOut
     status: Status
+    favorite_count: int

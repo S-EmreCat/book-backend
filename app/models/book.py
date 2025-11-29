@@ -1,8 +1,10 @@
-from sqlalchemy import Column, Enum, ForeignKey, Integer, String, Text
+from sqlalchemy import Column, Enum, ForeignKey, Integer, String, Text, func, select
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 
 from app.enums import Status
 from app.models.base import Base
+from app.models.favorite import Favorite
 
 
 class Book(Base):
@@ -24,6 +26,15 @@ class Book(Base):
     author = relationship("Author", uselist=False)
 
     favorites = relationship("Favorite", back_populates="book", lazy="selectin")
+
+    @hybrid_property
+    def favorite_count(self) -> int:
+        return len(self.favorites or [])
+
+    @favorite_count.expression
+    def favorite_count(cls):
+        # Query tarafında: SQL COUNT
+        return select(func.count(Favorite.id)).where(Favorite.book_id == cls.id).correlate(cls).scalar_subquery()
 
 
 # TODO: table: book_comment, book_rating, book_tag eklenebilir
