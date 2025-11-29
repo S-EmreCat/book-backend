@@ -66,25 +66,17 @@ class UserCore:
 
         return user
 
-    def get_me(self, user: User):
-        return user
-
     def update_me(
         self,
         db: Session,
         user: User,
         data: UserMeUpdateIn,
     ):
-        if data.first_name is not None:
-            user.first_name = data.first_name
-
-        if data.last_name is not None:
-            user.last_name = data.last_name
-
-        if data.birth_date is not None:
-            user.birth_date = data.birth_date
-
+        user.first_name = data.first_name
+        user.last_name = data.last_name
+        user.birth_date = data.birth_date
         db.commit()
+
         return user
 
 

@@ -1,7 +1,5 @@
 from datetime import date
 
-from pydantic import Field
-
 from app.enums import Status
 from app.schemas.base import BaseSchema
 
@@ -20,6 +18,6 @@ class UserDetailOut(BaseSchema):
 
 
 class UserMeUpdateIn(BaseSchema):
-    first_name: str | None = Field(default=None, example="Emre")
-    last_name: str | None = Field(default=None, example="Çat")
-    birth_date: date | None = Field(default=None, example="2000-01-01")
+    first_name: str
+    last_name: str
+    birth_date: date
