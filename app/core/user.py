@@ -8,6 +8,7 @@ from app.helpers.error_helper import Error
 from app.helpers.hash_helper import hash_helper
 from app.models import User
 from app.schemas.panel.auth import RegisterIn
+from app.schemas.panel.user import UserMeUpdateIn
 
 
 class UserCore:
@@ -62,6 +63,19 @@ class UserCore:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=Error.user_not_active,
             )
+
+        return user
+
+    def update_me(
+        self,
+        db: Session,
+        user: User,
+        data: UserMeUpdateIn,
+    ):
+        user.first_name = data.first_name
+        user.last_name = data.last_name
+        user.birth_date = data.birth_date
+        db.commit()
 
         return user
 
