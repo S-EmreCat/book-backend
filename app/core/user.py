@@ -73,7 +73,7 @@ class UserCore:
         phone_number: Optional[str] = None,
         status: Optional[Status] = None,
     ):
-        query = db.query(User)
+        query = db.query(User).filter(User.status != Status.deleted)
 
         filters = []
 
