@@ -1,6 +1,6 @@
 from fastapi import HTTPException, status
 from fastapi_pagination.ext.sqlalchemy import paginate
-from sqlalchemy import or_
+from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
 from app.core.author import author_core
@@ -10,12 +10,16 @@ from app.helpers.error_helper import Error
 from app.models import Book
 from app.models.author import Author
 from app.models.category import Category
+from app.models.favorite import Favorite
 from app.schemas.admin.book import BookIn
 
 
 class BookCore:
     def __init__(self):
         pass
+
+    def favorite_count_expr(self):
+        return select(func.count(Favorite.id)).where(Favorite.book_id == Book.id).correlate(Book).scalar_subquery()
 
     def get_book_by_id(self, db: Session, book_id: int, only_active=True):
         filter_array = [Book.id == book_id, Book.status != Status.deleted]
@@ -45,7 +49,7 @@ class BookCore:
             )
 
         if with_entities:
-            favorite_count = Book.favorite_count.label("favorite_count")
+            favorite_count = self.favorite_count_expr()
             query = (
                 query.with_entities(
                     Book.id.label("id"),
@@ -54,7 +58,7 @@ class BookCore:
                     Author.name.label("author_name"),
                     Category.name.label("category_name"),
                     Book.published_year.label("published_year"),
-                    favorite_count,
+                    favorite_count.label("favorite_count"),
                 )
                 .join(Author, Author.id == Book.author_id)
                 .join(Category, Category.id == Book.category_id)
@@ -66,7 +70,7 @@ class BookCore:
         GET /panel/book/{book_id}
         Sadece aktif kitap + detay alanları + favorite count
         """
-        favorite_count = Book.favorite_count.label("favorite_count")
+        favorite_count = self.favorite_count_expr()
         query = (
             db.query(Book)
             .join(Author, Author.id == Book.author_id)
@@ -86,7 +90,7 @@ class BookCore:
                 Book.isbn.label("isbn"),
                 Book.barcode.label("barcode"),
                 Book.description.label("description"),
-                favorite_count,
+                favorite_count.label("favorite_count"),
             )
         )
 
