@@ -1,9 +1,10 @@
 from typing import Optional
 
 from fastapi import HTTPException, status
+from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
-from app.enums import Status
+from app.enums import Status, StatusInput
 from app.helpers.error_helper import Error
 from app.helpers.hash_helper import hash_helper
 from app.models import User
@@ -63,6 +64,50 @@ class UserCore:
                 detail=Error.user_not_active,
             )
 
+        return user
+
+    def get_user_list(
+        self,
+        db: Session,
+        email: Optional[str] = None,
+        phone_number: Optional[str] = None,
+        status: Optional[Status] = None,
+    ):
+        query = db.query(User).filter(User.status != Status.deleted)
+
+        filters = []
+
+        if email:
+            filters.append(User.email.ilike(f"%{email}%"))
+
+        if phone_number:
+            filters.append(User.phone_number.ilike(f"%{phone_number}%"))
+
+        if status is not None:
+            filters.append(User.status == status)
+
+        return paginate(query.filter(*filters))
+
+    def get_user_by_id(self, db: Session, user_id: int) -> User:
+        user = db.query(User).filter(User.id == user_id, User.status != Status.deleted).first()
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=Error.user_not_found,
+            )
+        return user
+
+    def update_user(
+        self,
+        db: Session,
+        user_id: int,
+        new_status: StatusInput,
+    ) -> User:
+        user = self.get_user_by_id(db=db, user_id=user_id)
+
+        user.status = new_status
+        db.add(user)
+        db.commit()
         return user
 
 

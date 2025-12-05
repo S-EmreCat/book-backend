@@ -142,7 +142,6 @@ class BookCore:
         book.status = data.status
 
         db.commit()
-        db.refresh(book)
         return book
 
     def delete_book(self, db: Session, book_id: int):
