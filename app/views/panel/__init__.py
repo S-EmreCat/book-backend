@@ -11,6 +11,7 @@ from app.views.panel.endpoints.author import router as author_router
 from app.views.panel.endpoints.book import router as book_router
 from app.views.panel.endpoints.category import router as category_router
 from app.views.panel.endpoints.favorite import router as favorite_router
+from app.views.panel.endpoints.publisher import router as publisher_router
 
 app = FastAPI(
     title="User Panel",
@@ -22,6 +23,7 @@ app.include_router(category_router, prefix="/category", tags=["Category"])
 app.include_router(book_router, prefix="/book", tags=["Book"])
 app.include_router(author_router, prefix="/author", tags=["Author"])
 app.include_router(favorite_router, prefix="/book/favorite", tags=["Book"])
+app.include_router(publisher_router, prefix="/publisher", tags=["Publisher"])
 
 
 @app.exception_handler(StarletteHTTPException)

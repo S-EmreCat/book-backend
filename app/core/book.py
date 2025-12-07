@@ -5,11 +5,13 @@ from sqlalchemy.orm import Session
 
 from app.core.author import author_core
 from app.core.category import category_core
+from app.core.publisher import publisher_core
 from app.enums import Status
 from app.helpers.error_helper import Error
 from app.models import Book
 from app.models.author import Author
 from app.models.category import Category
+from app.models.publisher import Publisher
 from app.schemas.admin.book import BookIn
 
 
@@ -50,12 +52,14 @@ class BookCore:
             query = (
                 query.join(Author, Author.id == Book.author_id)
                 .join(Category, Category.id == Book.category_id)
+                .outerjoin(Publisher, Publisher.id == Book.publisher_id)
                 .with_entities(
                     Book.id.label("id"),
                     Book.date_created.label("date_created"),
                     Book.title.label("title"),
                     Author.name.label("author_name"),
                     Category.name.label("category_name"),
+                    Publisher.name.label("publisher_name"),
                     Book.published_year.label("published_year"),
                 )
             )
@@ -70,6 +74,7 @@ class BookCore:
             db.query(Book)
             .join(Author, Author.id == Book.author_id)
             .join(Category, Category.id == Book.category_id)
+            .outerjoin(Publisher, Publisher.id == Book.publisher_id)
             .filter(
                 Book.id == book_id,
                 Book.status == Status.active,
@@ -80,6 +85,7 @@ class BookCore:
                 Book.title.label("title"),
                 Author.name.label("author_name"),
                 Category.name.label("category_name"),
+                Publisher.name.label("publisher_name"),
                 Book.published_year.label("published_year"),
                 Book.page_count.label("page_count"),
                 Book.isbn.label("isbn"),
@@ -107,7 +113,8 @@ class BookCore:
                     status_code=status.HTTP_409_CONFLICT,
                     detail=Error.book_isbn_exists,
                 )
-
+        # publisher_id controll
+        publisher = publisher_core.get_publisher_by_id(db=db, publisher_id=data.publisher_id, only_active=False)
         # author_id controll
         author = author_core.get_author_by_id(db=db, author_id=data.author_id)
         # category_id controll
@@ -118,6 +125,7 @@ class BookCore:
             isbn=data.isbn,
             author_id=author.id,
             category_id=category.id,
+            publisher_id=publisher.id,
             published_year=data.published_year,
             page_count=data.page_count,
             barcode=data.barcode,
@@ -130,11 +138,18 @@ class BookCore:
 
     def update_book(self, db: Session, book_id: int, data: BookIn):
         book = self.get_book_by_id(db=db, book_id=book_id, only_active=False)
+        # publisher_id controll
+        publisher = publisher_core.get_publisher_by_id(db=db, publisher_id=data.publisher_id, only_active=False)
+        # author_id controll
+        author = author_core.get_author_by_id(db=db, author_id=data.author_id)
+        # category_id controll
+        category = category_core.get_category_by_id(db=db, category_id=data.category_id)
 
         book.title = data.title
         book.isbn = data.isbn
-        book.author_id = data.author_id
-        book.category_id = data.category_id
+        book.author_id = author.id
+        book.category_id = category.id
+        book.publisher_id = publisher.id
         book.published_year = data.published_year
         book.page_count = data.page_count
         book.barcode = data.barcode

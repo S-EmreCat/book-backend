@@ -12,6 +12,7 @@ class Book(Base):
     isbn = Column(String(20), nullable=True)  # Uluslararası standart kitap numarası
     author_id = Column(Integer, ForeignKey("author.id"))
     category_id = Column(Integer, ForeignKey("category.id"))
+    publisher_id = Column(Integer, ForeignKey("publisher.id"))
 
     published_year = Column(Integer, nullable=True)
     page_count = Column(Integer, nullable=True)
@@ -24,6 +25,7 @@ class Book(Base):
     author = relationship("Author", uselist=False)
 
     favorites = relationship("Favorite", back_populates="book", lazy="selectin")
+    publisher = relationship("Publisher", back_populates="books", foreign_keys=[publisher_id])
 
 
 # TODO: table: book_comment, book_rating, book_tag eklenebilir

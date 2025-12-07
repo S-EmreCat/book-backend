@@ -17,11 +17,17 @@ class CategoryOut(BaseSchema):
     name: str
 
 
+class PublisherOut(BaseSchema):
+    id: int
+    name: str
+
+
 class BookIn(BaseSchema):
     title: str = Field(min_length=2)
     isbn: str
     author_id: int
     category_id: int
+    publisher_id: Optional[int]
     published_year: Optional[int]
     page_count: Optional[int] = Field(default=None, ge=1)
     barcode: int = Field(ge=2)
@@ -44,6 +50,7 @@ class BookOut(BaseSchema):
     isbn: Optional[str]
     author: AuthorOut
     category: CategoryOut
+    publisher: Optional[PublisherOut]
     published_year: Optional[int]
     page_count: Optional[int]
     barcode: int
@@ -57,4 +64,5 @@ class BookListOut(BaseSchema):
     isbn: Optional[str]
     author: AuthorOut
     category: CategoryOut
+    publisher: Optional[PublisherOut]
     status: Status
