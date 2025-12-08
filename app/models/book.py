@@ -25,6 +25,10 @@ class Book(Base):
 
     favorites = relationship("Favorite", back_populates="book", lazy="selectin")
 
+    @property
+    def favorite_count(self) -> int:
+        return len(self.favorites or [])
+
 
 # TODO: table: book_comment, book_rating, book_tag eklenebilir
 # TODO: daha fazla field eklenebilir mi?
