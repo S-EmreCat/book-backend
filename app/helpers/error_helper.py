@@ -35,9 +35,12 @@ class Error(IntEnum):
     book_isbn_exists = 1003, _("ISBN already exists.")
 
     # Favorite Errors
-    favorite_not_found = 1101, _("No favorite books found for the user.")
-    favorite_already_exists = 1102, _("Book is already in favorites.")
+    favorite_not_found = 1106, _("No favorite books found for the user.")
+    favorite_already_exists = 1107, _("Book is already in favorites.")
 
     # Publisher Errors
     publisher_not_found = 1200, _("Publisher not found.")
     publisher_already_exists = 1201, _("Publisher name already exists.")
+    # User Errors
+    user_not_found = 1101, _("User not found.")
+    invalid_status_for_update = 1102, _("Status can only be 'active' or 'passive'.")
