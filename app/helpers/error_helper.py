@@ -22,6 +22,10 @@ class Error(IntEnum):
     invalid_current_password = 905, _("Current password is incorrect.")
     new_password_same_as_old = 906, _("New password cannot be the same as the current password.")
 
+    # User Errors
+    user_not_found = 950, _("User not found.")
+    invalid_status_for_update = 951, _("Status can only be 'active' or 'passive'.")
+
     # Author Errors
     author_not_found = 1000, _("Author not found.")
     author_already_exists = 1001, _("Author name already exists.")
@@ -35,6 +39,6 @@ class Error(IntEnum):
     book_isbn_exists = 3001, _("ISBN already exists.")
     favorite_already_exists = 3002, _("Favorite already exists.")
 
-    # User Errors
-    user_not_found = 4000, _("User not found.")
-    invalid_status_for_update = 4001, _("Status can only be 'active' or 'passive'.")
+    # Publisher Errors
+    publisher_not_found = 4000, _("Publisher not found.")
+    publisher_already_exists = 4001, _("Publisher name already exists.")

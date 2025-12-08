@@ -5,12 +5,12 @@ from app.enums import Status
 from app.schemas.base import BaseSchema
 
 
-class CategoryIn(BaseSchema):
+class PublisherIn(BaseSchema):
     name: str
     status: Optional[Status] = Status.passive
 
 
-class CategoryOut(BaseSchema):
+class PublisherOut(BaseSchema):
     id: int
     date_created: datetime
     date_modified: datetime

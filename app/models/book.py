@@ -12,6 +12,7 @@ class Book(Base):
     isbn = Column(String(20), nullable=True)  # Uluslararası standart kitap numarası
     author_id = Column(Integer, ForeignKey("author.id"))
     category_id = Column(Integer, ForeignKey("category.id"))
+    publisher_id = Column(Integer, ForeignKey("publisher.id"))
 
     published_year = Column(Integer, nullable=True)
     page_count = Column(Integer, nullable=True)
@@ -21,8 +22,8 @@ class Book(Base):
     status = Column(Enum(Status), nullable=False, default=Status.passive)
 
     category = relationship("Category", foreign_keys=[category_id])
-    author = relationship("Author", uselist=False)
-
+    author = relationship("Author", uselist=False, foreign_keys=[author_id])
+    publisher = relationship("Publisher", uselist=False, foreign_keys=[publisher_id])
     favorites = relationship("Favorite", back_populates="book", lazy="selectin")
 
     @property

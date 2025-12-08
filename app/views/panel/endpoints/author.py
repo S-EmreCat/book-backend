@@ -5,7 +5,7 @@ from app.core.author import author_core
 from app.core.book import book_core
 from app.enums import Status
 from app.schemas.pagination import CustomPage
-from app.schemas.panel.author import PanelAuthorDetailOut, PanelAuthorListOut
+from app.schemas.panel.author import AuthorDetailOut, AuthorListOut
 from app.schemas.panel.book import BookListOut
 from app.views.deps import get_db
 
@@ -14,14 +14,14 @@ router = APIRouter()
 
 @router.get(
     "",
-    response_model=CustomPage[PanelAuthorListOut],
+    response_model=CustomPage[AuthorListOut],
     summary="Tüm Yazarları Listele",
 )
 def get_authors(db: Session = Depends(get_db)):
     return author_core.get_all_authors(db=db)
 
 
-@router.get("/{author_id}", response_model=PanelAuthorDetailOut, summary="Yazar Detayı")
+@router.get("/{author_id}", response_model=AuthorDetailOut, summary="Yazar Detayı")
 def get_author_detail(author_id: int, db: Session = Depends(get_db)):
     return author_core.get_author_by_id(db=db, author_id=author_id)
 
