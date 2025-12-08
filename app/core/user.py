@@ -23,14 +23,12 @@ class UserCore:
         return db.query(User).filter(User.phone_number == phone_number, User.status != Status.deleted).first()
 
     def create_user(self, db: Session, data: RegisterIn) -> User:
-        # email uniq kontrolü
         if self.get_user_by_email(db=db, email=data.email):
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
                 detail=Error.user_email_exists,
             )
 
-        # phone uniq kontrolü
         if self.get_user_by_phone(db=db, phone_number=data.phone_number):
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
@@ -67,18 +65,6 @@ class UserCore:
 
         return user
 
-    def update_me(
-        self,
-        db: Session,
-        user: User,
-        data: UserMeUpdateIn,
-    ) -> User:
-        user.first_name = data.first_name
-        user.last_name = data.last_name
-        user.birth_date = data.birth_date
-        db.commit()
-        return user
-
     def get_user_list(
         self,
         db: Session,
@@ -86,20 +72,19 @@ class UserCore:
         phone_number: Optional[str] = None,
         status: Optional[Status] = None,
     ):
-        query = db.query(User).filter(User.status != Status.deleted)
-
-        filters = []
+        filter_array = [User.status != Status.deleted]
+        query = db.query(User)
 
         if email:
-            filters.append(User.email.ilike(f"%{email}%"))
+            filter_array.append(User.email.ilike(f"%{email}%"))
 
         if phone_number:
-            filters.append(User.phone_number.ilike(f"%{phone_number}%"))
+            filter_array.append(User.phone_number.ilike(f"%{phone_number}%"))
 
         if status is not None:
-            filters.append(User.status == status)
+            filter_array.append(User.status == status)
 
-        return paginate(query.filter(*filters))
+        return paginate(query.filter(*filter_array))
 
     def get_user_by_id(self, db: Session, user_id: int) -> User:
         user = db.query(User).filter(User.id == user_id, User.status != Status.deleted).first()
@@ -121,6 +106,19 @@ class UserCore:
         user.status = new_status
         db.add(user)
         db.commit()
+        return user
+
+    def update_me(
+        self,
+        db: Session,
+        user: User,
+        data: UserMeUpdateIn,
+    ):
+        user.first_name = data.first_name
+        user.last_name = data.last_name
+        user.birth_date = data.birth_date
+        db.commit()
+
         return user
 
 

@@ -21,22 +21,16 @@ class CategoryCore:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=Error.category_not_found)
         return category
 
-    # status parametresi ile aktif/pasif tüm kategoriler veya sadece aktif kategoriler getirilebilir
     def get_all_categories(self, db: Session, only_active=True):
         query = db.query(Category).filter(Category.status != Status.deleted)
         if only_active:
             query = query.filter(Category.status == Status.active)
-        # sadece active ve passive kategoriler
         return paginate(query)
 
     def create_category(self, db: Session, data: CategoryIn):
-        # Aynı isimde kategori varsa hata döndür
         existing = db.query(Category).filter(Category.name == data.name, Category.status != Status.deleted).first()
         if existing:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=Error.category_name_exists,
-            )
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=Error.category_name_exists)
 
         category = Category(
             name=data.name,
@@ -49,7 +43,6 @@ class CategoryCore:
     def update_category(self, db: Session, category_id: int, data: CategoryIn):
         category = self.get_category_by_id(db=db, category_id=category_id, only_active=False)
 
-        # İsim değiştirilecekse, aynı isim başka kategori var mı kontrol et
         if data.name != category.name:
             existing = (
                 db.query(Category)
@@ -61,10 +54,7 @@ class CategoryCore:
                 .first()
             )
             if existing:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=Error.category_name_exists,
-                )
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=Error.category_name_exists)
 
         category.name = data.name
         category.status = data.status
@@ -73,7 +63,7 @@ class CategoryCore:
 
     def delete_category(self, db: Session, category_id: int):
         category = self.get_category_by_id(db=db, category_id=category_id, only_active=False)
-        category.status = Status.deleted  # Soft delete
+        category.status = Status.deleted
         db.commit()
         return {"message": "Category deleted successfully."}
 

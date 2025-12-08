@@ -4,7 +4,13 @@ from typing import Optional
 from app.schemas.base import BaseSchema
 
 
-class FavoriteOut(BaseSchema):
+class FavoriteCreateOut(BaseSchema):
+    id: int
+    date_created: datetime
+    book_id: int
+
+
+class FavoriteOut(FavoriteCreateOut):
     id: int
     date_created: datetime
     book_id: int

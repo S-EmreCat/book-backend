@@ -36,27 +36,24 @@ class BookIn(BaseSchema):
         return year
 
 
-class BookOut(BaseSchema):
+class BookBase(BaseSchema):
     id: int
-    date_created: datetime
-    date_modified: datetime
     title: str
     isbn: Optional[str]
     author: AuthorOut
     category: CategoryOut
+    status: Status
+    favorite_count: int
+
+
+class BookOut(BookBase):
+    date_created: datetime
+    date_modified: datetime
     published_year: Optional[int]
     page_count: Optional[int]
     barcode: int
     description: Optional[str]
-    favorite_count: int
-    status: Status
 
 
-class BookListOut(BaseSchema):
-    id: int
-    title: str
-    isbn: Optional[str]
-    author: AuthorOut
-    category: CategoryOut
-    status: Status
-    favorite_count: int
+class BookListOut(BookBase):
+    ...

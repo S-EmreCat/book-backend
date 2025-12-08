@@ -4,25 +4,22 @@ from typing import Optional
 from app.schemas.base import BaseSchema
 
 
-class BookListOut(BaseSchema):
+class BookBase(BaseSchema):
     id: int
     date_created: datetime
     title: str
     author_name: str
     category_name: str
-    favorite_count: int
     published_year: Optional[int]
+    favorite_count: int
 
 
-class BookDetailOut(BaseSchema):
-    id: int
-    date_created: datetime
-    title: str
-    author_name: str
-    category_name: str
-    favorite_count: int
-    published_year: Optional[int]
+class BookDetailOut(BookBase):
     page_count: Optional[int]
     isbn: Optional[str]
     barcode: int
     description: Optional[str]
+
+
+class BookListOut(BookBase):
+    ...

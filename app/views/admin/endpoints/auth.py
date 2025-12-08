@@ -47,21 +47,18 @@ def change_password(
     db: Session = Depends(get_db),
     current_user: AdminUser = Depends(get_current_admin_user),
 ):
-    # Mevcut şifre doğrulaması
     if not hash_helper.verify(current_user.password_hash, data.current_password):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=Error.invalid_current_password,
         )
 
-    # Yeni şifre eskiyle aynı mı?
     if data.current_password == data.new_password:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=Error.new_password_same_as_old,
         )
 
-    # Yeni şifreyi hashleyip DB’ye kaydet
     current_user.password_hash = hash_helper.get_password_hash(data.new_password)
     db.commit()
 

@@ -1,16 +1,13 @@
 from fastapi import HTTPException, status
 from fastapi_pagination.ext.sqlalchemy import paginate
-from sqlalchemy import func, or_, select
+from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 
 from app.core.author import author_core
 from app.core.category import category_core
 from app.enums import Status
 from app.helpers.error_helper import Error
-from app.models import Book
-from app.models.author import Author
-from app.models.category import Category
-from app.models.favorite import Favorite
+from app.models import Author, Book, Category, Favorite
 from app.schemas.admin.book import BookIn
 
 
@@ -18,32 +15,52 @@ class BookCore:
     def __init__(self):
         pass
 
-    def favorite_count_expr(self):
-        return select(func.count(Favorite.id)).where(Favorite.book_id == Book.id).correlate(Book).scalar_subquery()
-
-    def get_book_by_id(self, db: Session, book_id: int, only_active=True):
+    def get_book_by_id(self, db: Session, book_id: int, only_active=True, with_entities=False):
         filter_array = [Book.id == book_id, Book.status != Status.deleted]
         if only_active:
             filter_array.append(Book.status == Status.active)
-        book = db.query(Book).filter(*filter_array).first()
+
+        query = db.query(Book).filter(*filter_array)
+
+        if with_entities:
+            query = (
+                query.join(Author, Author.id == Book.author_id)
+                .join(Category, Category.id == Book.category_id)
+                .outerjoin(Favorite, Favorite.book_id == Book.id)
+                .with_entities(
+                    Book.id.label("id"),
+                    Book.date_created.label("date_created"),
+                    Book.title.label("title"),
+                    Author.name.label("author_name"),
+                    Category.name.label("category_name"),
+                    Book.published_year.label("published_year"),
+                    Book.page_count.label("page_count"),
+                    Book.isbn.label("isbn"),
+                    Book.barcode.label("barcode"),
+                    Book.description.label("description"),
+                    func.count(Favorite.id).label("favorite_count"),
+                )
+            )
+
+        book = query.first()
+
         if not book:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=Error.record_not_found)
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=Error.book_not_found)
         return book
 
     def get_all_books(self, db: Session, search=None, status=None, with_entities=False, author_id=None):
         query = db.query(Book)
+        filter_array = [Book.status != Status.deleted]
 
         if author_id is not None:
-            query = query.filter(Book.author_id == author_id)
+            filter_array.append(Book.author_id == author_id)
 
         if status is not None:
-            query = query.filter(Book.status == status)
-        else:
-            query = query.filter(Book.status != Status.deleted)
+            filter_array.append(Book.status == status)
 
         if search:
             search = f"%{search}%"
-            query = query.filter(
+            filter_array.append(
                 or_(
                     Book.title.ilike(search),
                     Book.isbn.ilike(search),
@@ -52,10 +69,10 @@ class BookCore:
             )
 
         if with_entities:
-            favorite_count = self.favorite_count_expr()
             query = (
                 query.join(Author, Author.id == Book.author_id)
                 .join(Category, Category.id == Book.category_id)
+                .outerjoin(Favorite, Favorite.book_id == Book.id)
                 .with_entities(
                     Book.id.label("id"),
                     Book.date_created.label("date_created"),
@@ -63,63 +80,20 @@ class BookCore:
                     Author.name.label("author_name"),
                     Category.name.label("category_name"),
                     Book.published_year.label("published_year"),
-                    favorite_count.label("favorite_count"),
+                    func.count(Favorite.id).label("favorite_count"),
                 )
-            )
-        return paginate(query)
-
-    def get_active_book_detail(self, db: Session, book_id: int):
-        """
-        GET /panel/book/{book_id}
-        Sadece aktif kitap + detay alanları + favorite count
-        """
-        favorite_count = self.favorite_count_expr()
-        query = (
-            db.query(Book)
-            .join(Author, Author.id == Book.author_id)
-            .join(Category, Category.id == Book.category_id)
-            .filter(
-                Book.id == book_id,
-                Book.status == Status.active,
-            )
-            .with_entities(
-                Book.id.label("id"),
-                Book.date_created.label("date_created"),
-                Book.title.label("title"),
-                Author.name.label("author_name"),
-                Category.name.label("category_name"),
-                Book.published_year.label("published_year"),
-                Book.page_count.label("page_count"),
-                Book.isbn.label("isbn"),
-                Book.barcode.label("barcode"),
-                Book.description.label("description"),
-                favorite_count.label("favorite_count"),
-            )
-        )
-
-        row = query.first()
-        if not row:
-            # kitap yoksa veya active değilse
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=Error.record_not_found,
+                .group_by(Book.id)
             )
 
-        return row
+        return paginate(query.filter(*filter_array))
 
     def create_book(self, db: Session, data: BookIn):
-        # ISBN uniqueness check (excluding deleted - check active or passive)
         if data.isbn:
             exists = db.query(Book).filter(Book.isbn == data.isbn, Book.status != Status.deleted).first()
             if exists:
-                raise HTTPException(
-                    status_code=status.HTTP_409_CONFLICT,
-                    detail=Error.book_isbn_exists,
-                )
+                raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=Error.book_isbn_exists)
 
-        # author_id controll
         author = author_core.get_author_by_id(db=db, author_id=data.author_id)
-        # category_id controll
         category = category_core.get_category_by_id(db=db, category_id=data.category_id)
 
         book = Book(
