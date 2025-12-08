@@ -2,11 +2,9 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.core.book import book_core
-from app.models import AdminUser
 from app.schemas import MessageOut
 from app.schemas.admin.book import BookIn, BookListOut, BookOut
 from app.schemas.pagination import CustomPage
-from app.views.admin.deps import get_current_admin_user
 from app.views.deps import get_db
 
 router = APIRouter()
@@ -15,7 +13,6 @@ router = APIRouter()
 @router.get("", response_model=CustomPage[BookListOut], summary="Tüm Kitapları Listele")
 def get_all_books(
     db: Session = Depends(get_db),
-    panel_user: AdminUser = Depends(get_current_admin_user),
 ):
     return book_core.get_all_books(db=db)
 
@@ -24,7 +21,6 @@ def get_all_books(
 def get_book_detail(
     book_id: int,
     db: Session = Depends(get_db),
-    panel_user: AdminUser = Depends(get_current_admin_user),
 ):
     return book_core.get_book_by_id(db=db, book_id=book_id, only_active=False)
 
@@ -33,7 +29,6 @@ def get_book_detail(
 def create_book(
     data: BookIn,
     db: Session = Depends(get_db),
-    panel_user: AdminUser = Depends(get_current_admin_user),
 ):
     return book_core.create_book(db=db, data=data)
 
@@ -43,7 +38,6 @@ def update_book(
     book_id: int,
     data: BookIn,
     db: Session = Depends(get_db),
-    panel_user: AdminUser = Depends(get_current_admin_user),
 ):
     return book_core.update_book(db=db, book_id=book_id, data=data)
 
@@ -52,6 +46,5 @@ def update_book(
 def delete_book(
     book_id: int,
     db: Session = Depends(get_db),
-    panel_user: AdminUser = Depends(get_current_admin_user),
 ):
     return book_core.delete_book(db=db, book_id=book_id)

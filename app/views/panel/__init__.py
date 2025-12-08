@@ -1,15 +1,17 @@
 import traceback
 
-from fastapi import FastAPI, Request, status
+from fastapi import Depends, FastAPI, Request, status
 from fastapi.responses import JSONResponse
 from fastapi_pagination import add_pagination
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.database.database import SessionLocal
+from app.views.panel.deps import get_current_panel_user
 from app.views.panel.endpoints.auth import router as auth_router
 from app.views.panel.endpoints.author import router as author_router
 from app.views.panel.endpoints.book import router as book_router
 from app.views.panel.endpoints.category import router as category_router
+from app.views.panel.endpoints.favorite import router as favorite_router
 from app.views.panel.endpoints.user import router as user_router
 
 app = FastAPI(
@@ -19,10 +21,14 @@ app = FastAPI(
 
 app.include_router(auth_router, prefix="/panel", tags=["Auth"])
 app.include_router(user_router, prefix="/user", tags=["User"])
-app.include_router(category_router, prefix="/category", tags=["Category"])
-app.include_router(book_router, prefix="/book", tags=["Book"])
-app.include_router(author_router, prefix="/author", tags=["Author"])
-app.include_router(favorite_router, prefix="/book/favorite", tags=["Book"])
+app.include_router(
+    category_router, prefix="/category", tags=["Category"], dependencies=[Depends(get_current_panel_user)]
+)
+app.include_router(book_router, prefix="/book", tags=["Book"], dependencies=[Depends(get_current_panel_user)])
+app.include_router(author_router, prefix="/author", tags=["Author"], dependencies=[Depends(get_current_panel_user)])
+app.include_router(
+    favorite_router, prefix="/book/favorite", tags=["Book"], dependencies=[Depends(get_current_panel_user)]
+)
 
 
 @app.exception_handler(StarletteHTTPException)

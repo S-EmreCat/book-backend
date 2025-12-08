@@ -5,7 +5,7 @@ from app.core.favorite import favorite_core
 from app.models import User
 from app.schemas import MessageOut
 from app.schemas.pagination import CustomPage
-from app.schemas.panel.favorite import FavoriteOut
+from app.schemas.panel.favorite import FavoriteCreateOut, FavoriteOut
 from app.views.deps import get_db
 from app.views.panel.deps import get_current_panel_user
 
@@ -20,7 +20,7 @@ def get_favorite_books(
     return favorite_core.get_user_favorite_books(db=db, user=user)
 
 
-@router.post("/{book_id}", response_model=FavoriteOut, summary="Favorilere Kitap Ekle")
+@router.post("/{book_id}", response_model=FavoriteCreateOut, summary="Favorilere Kitap Ekle")
 def create_favorite_book(
     book_id: int,
     db: Session = Depends(get_db),

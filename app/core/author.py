@@ -18,19 +18,14 @@ class AuthorCore:
             filters.append(Author.status == Status.active)
         author = db.query(Author).filter(*filters).first()
         if not author:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=Error.author_not_found,
-            )
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=Error.author_not_found)
         return author
 
-    def get_all_authors(self, db: Session, status=None):
-        filters = []
-        if status is not None:
-            filters.append(Author.status == status)
-        else:
-            filters.append(Author.status != Status.deleted)
-        return paginate(db.query(Author).filter(*filters))
+    def get_all_authors(self, db: Session, only_active=True):
+        query = db.query(Author).filter(Author.status != Status.deleted)
+        if only_active:
+            query = query.filter(Author.status == Status.active)
+        return paginate(query)
 
     def create_author(self, db: Session, data: AuthorIn):
         author = Author(
