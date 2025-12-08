@@ -30,8 +30,11 @@ class BookCore:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=Error.record_not_found)
         return book
 
-    def get_all_books(self, db: Session, search=None, status=None, with_entities=False):
+    def get_all_books(self, db: Session, search=None, status=None, with_entities=False, author_id=None):
         query = db.query(Book)
+
+        if author_id is not None:
+            query = query.filter(Book.author_id == author_id)
 
         if status is not None:
             query = query.filter(Book.status == status)
@@ -51,7 +54,9 @@ class BookCore:
         if with_entities:
             favorite_count = self.favorite_count_expr()
             query = (
-                query.with_entities(
+                query.join(Author, Author.id == Book.author_id)
+                .join(Category, Category.id == Book.category_id)
+                .with_entities(
                     Book.id.label("id"),
                     Book.date_created.label("date_created"),
                     Book.title.label("title"),
@@ -60,8 +65,6 @@ class BookCore:
                     Book.published_year.label("published_year"),
                     favorite_count.label("favorite_count"),
                 )
-                .join(Author, Author.id == Book.author_id)
-                .join(Category, Category.id == Book.category_id)
             )
         return paginate(query)
 
@@ -148,7 +151,6 @@ class BookCore:
         book.status = data.status
 
         db.commit()
-        db.refresh(book)
         return book
 
     def delete_book(self, db: Session, book_id: int):
