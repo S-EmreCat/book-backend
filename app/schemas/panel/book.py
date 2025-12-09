@@ -10,6 +10,7 @@ class BookBase(BaseSchema):
     title: str
     author_name: str
     category_name: str
+    publisher_name: str
     published_year: Optional[int]
     favorite_count: int
 

@@ -17,16 +17,22 @@ class CategoryOut(BaseSchema):
     name: str
 
 
+class PublisherOut(BaseSchema):
+    id: int
+    name: str
+
+
 class BookIn(BaseSchema):
     title: str = Field(min_length=2)
     isbn: str
     author_id: int
     category_id: int
+    publisher_id: int
     published_year: Optional[int]
     page_count: Optional[int] = Field(default=None, ge=1)
     barcode: int = Field(ge=2)
     description: Optional[str]
-    status: Optional[Status]
+    status: Optional[Status] = Status.passive
 
     @field_validator("published_year")
     @classmethod
@@ -42,6 +48,7 @@ class BookBase(BaseSchema):
     isbn: Optional[str]
     author: AuthorOut
     category: CategoryOut
+    publisher: PublisherOut
     status: Status
     favorite_count: int
 

@@ -9,7 +9,7 @@ class AuthorIn(BaseSchema):
     name: str
     description: Optional[str]
     image_url: Optional[str]
-    status: Optional[Status]
+    status: Optional[Status] = Status.passive
 
 
 class AuthorOut(BaseSchema):

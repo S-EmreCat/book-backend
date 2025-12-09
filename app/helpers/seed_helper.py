@@ -14,6 +14,9 @@ def initial_seed(db: Session):
     db.bulk_save_objects([models.Author(**c) for c in seed_data.authors])
     db.flush()
 
+    db.bulk_save_objects([models.Publisher(**c) for c in seed_data.publishers])
+    db.flush()
+
     db.bulk_save_objects([models.Book(**c) for c in seed_data.books])
     db.flush()
 

@@ -12,6 +12,7 @@ from app.views.panel.endpoints.author import router as author_router
 from app.views.panel.endpoints.book import router as book_router
 from app.views.panel.endpoints.category import router as category_router
 from app.views.panel.endpoints.favorite import router as favorite_router
+from app.views.panel.endpoints.publisher import router as publisher_router
 from app.views.panel.endpoints.user import router as user_router
 
 app = FastAPI(
@@ -24,6 +25,7 @@ app.include_router(user_router, prefix="/user", tags=["User"])
 app.include_router(
     category_router, prefix="/category", tags=["Category"], dependencies=[Depends(get_current_panel_user)]
 )
+app.include_router(publisher_router, prefix="/publisher", tags=["Publisher"])
 app.include_router(book_router, prefix="/book", tags=["Book"], dependencies=[Depends(get_current_panel_user)])
 app.include_router(author_router, prefix="/author", tags=["Author"], dependencies=[Depends(get_current_panel_user)])
 app.include_router(
