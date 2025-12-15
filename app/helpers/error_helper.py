@@ -42,3 +42,8 @@ class Error(IntEnum):
     # Publisher Errors
     publisher_not_found = 4000, _("Publisher not found.")
     publisher_already_exists = 4001, _("Publisher name already exists.")
+
+    # Comment Errors
+    comment_not_found = 5000, _("Comment not found.")
+    comment_already_exists = 5001, _("You have already commented on this book.")
+    rejection_reason_required = 5002, _("Rejection reason is required.")
