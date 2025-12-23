@@ -25,6 +25,7 @@ class Book(Base):
     author = relationship("Author", uselist=False, foreign_keys=[author_id])
     publisher = relationship("Publisher", uselist=False, foreign_keys=[publisher_id])
     favorites = relationship("Favorite", back_populates="book", lazy="selectin")
+    comments = relationship("BookComment", back_populates="book", lazy="selectin")
 
     @property
     def favorite_count(self) -> int:

@@ -17,6 +17,7 @@ class AdminUser(Base):
     status = Column(Enum(Status), nullable=False, default=Status.active)
 
     login_histories = relationship("AdminUserLoginHistory", back_populates="admin_user", lazy="selectin")
+    comments = relationship("BookComment", back_populates="admin_user", lazy="selectin")
 
 
 class AdminUserLoginHistory(Base):

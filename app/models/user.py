@@ -22,6 +22,7 @@ class User(Base):
     status = Column(Enum(Status), nullable=False, default=Status.active)
 
     favorites = relationship("Favorite", back_populates="user", lazy="selectin")
+    comments = relationship("BookComment", back_populates="user", lazy="selectin")
 
 
 # TODO: table: user_login_history

@@ -11,6 +11,7 @@ from app.views.admin.endpoints.auth import router as auth_router
 from app.views.admin.endpoints.author import router as author_router
 from app.views.admin.endpoints.book import router as book_router
 from app.views.admin.endpoints.category import router as category_router
+from app.views.admin.endpoints.comment import router as comment_router
 from app.views.admin.endpoints.publisher import router as publisher_router
 from app.views.admin.endpoints.user import router as user_router
 
@@ -29,6 +30,7 @@ app.include_router(
     publisher_router, prefix="/publisher", tags=["Publisher"], dependencies=[Depends(get_current_admin_user)]
 )
 app.include_router(user_router, prefix="/panel-users", tags=["User"], dependencies=[Depends(get_current_admin_user)])
+app.include_router(comment_router, prefix="/comments", tags=["Comment"], dependencies=[Depends(get_current_admin_user)])
 
 
 @app.exception_handler(StarletteHTTPException)
